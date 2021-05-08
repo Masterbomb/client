@@ -10,10 +10,10 @@
         "no-console": false,
         "variable-name": {
             "options": [
-            "ban-keywords",
-            "check-format",
-            "allow-leading-underscore",
-            "allow-snake-case"
+                "ban-keywords",
+                "check-format",
+                "allow-leading-underscore",
+                "allow-snake-case"
             ]
         }
     },

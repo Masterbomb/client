@@ -1,5 +1,8 @@
+import { Mf } from "./interfaces";
+import { Requests } from "./requests";
+
 // global manufacturers state
-var manufacturers = [];
+var manufacturers:Mf.Schema[];
 var $table = $('#manufacturersTable').bootstrapTable();
 var $remove = $('#deleteManufacturer');
 var $add = $('#addManufacturer');
@@ -47,21 +50,15 @@ function loading_template() {
 function get_state() {
     $table.bootstrapTable('showLoading');
     console.log("Fetching manufacturer table state");
-    // ajax call to manufacturers api
-    console.log(`API GET ${manufacturers_endpoint}`);
-    $.get({
-        url: manufacturers_endpoint
-    }).then((data) => {
-        // update global state
-        manufacturers = data.reverse();
-        console.log("Response: ", manufacturers);
-        // inject html for table use load for event listener
-        // temp timeout for load wheel debug
-        setTimeout(() => {$table.bootstrapTable('load', manufacturers)}, 1000);
-    }).catch(() => {
-        console.error("API request failed");
-        alert("API Request Failed");
-    });
+    Requests.get<Mf.Schema>(Mf.endpoint).then((response) => {
+        if (response != null) {
+            manufacturers = response.data.reverse();
+            console.log("Response Data: ", manufacturers);
+            setTimeout(() => {$table.bootstrapTable('load', manufacturers)}, 1000);
+        } else {
+            console.log("Received null response. skipping");
+        }
+    })
     // manually reset remove and edit options since the table selections are cleared on reload
     $remove.prop('disabled', true);
     $edit.prop('disabled', true);

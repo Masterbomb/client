@@ -1,7 +1,8 @@
+import { Bom } from './interfaces/bom';
+import { Mf } from './interfaces/manufacturer';
+import { Supplier } from './interfaces/supplier';
+
 // global bom state
-const parts_endpoint = '/v1/parts/';
-const projects_endpoint = '/v1/suppliers/'
-const bom_endpoint = '/v1/bom/'
 var boms = [];
 var suppliers = [];
 var manufacturers = [];
@@ -46,9 +47,9 @@ function get_state() {
     $table.bootstrapTable('showLoading');
     console.log("Fetching bom table state");
     // ajax call to boms api
-    console.log(`API GET ${boms_endpoint}`);
+    console.log(`API GET ${Bom.endpoint}`);
     $.get({
-        url: boms_endpoint
+        url: Bom.endpoint
     }).then((data) => {
         // update global state
         boms = data.reverse();
@@ -95,10 +96,10 @@ function loading_template() {
 async function get_fks() {
     // compile ajax queries and end with promise.all
     let promises = []
-    console.log(`API GET ${suppliers_endpoint}`);
+    console.log(`API GET ${Supplier.endpoint}`);
     promises.push(
         $.get({
-            url: `${suppliers_endpoint}`
+            url: `${Supplier.endpoint}`
         }).then((data) => {
             suppliers = data;
             console.log("Response: ", suppliers);
@@ -106,10 +107,10 @@ async function get_fks() {
             console.error("API request failed");
         })
     );
-    console.log(`API GET ${manufacturers_endpoint}`);
+    console.log(`API GET ${Mf.endpoint}`);
     promises.push(
         $.get({
-            url: `${manufacturers_endpoint}`
+            url: `${Mf.endpoint}`
         }).then((data) => {
             manufacturers = data;
             console.log("Response: ", manufacturers);
@@ -193,17 +194,17 @@ function post_bom(event) {
     //     return false;
     // }
     // start post request
-    const bom_payload = {
+    const payload:Bom.Schema = {
         'name': $('#bomForm #bomName').val(),
         'description': $('#bomForm #bomDesc').val(),
         'manufacturer_id': $('#bomForm #manufacturer-picker').val(),
         'supplier_id': $('#bomForm #supplier-picker').val(),
         'unit_price': $('#bomForm #bomUnitPrice').val()
     };
-    console.log(`API POST ${boms_endpoint} with: `, {...bom_payload});
+    console.log(`API POST ${Bom.endpoint} with: `, {...payload});
     $.post({
-        data: bom_payload,
-        url: boms_endpoint,
+        data: payload,
+        url: Bom.endpoint,
         dataType:'JSON'
     }).then(() => {
        // clear fields
@@ -238,7 +239,7 @@ function put_bom(event) {
     //     return false;
     // }
     // here only a single id field can be selected so this getter is safe
-    const bom_payload = {
+    const payload:Bom.Schema = {
         'id': get_id_selection()[0],
         'name': $('#bomForm #bomName').val(),
         'description': $('#bomForm #bomDesc').val(),
@@ -246,11 +247,11 @@ function put_bom(event) {
         'supplier_id': $('#bomForm #supplier-picker').val(),
         'unit_price': $('#bomForm #bomUnitPrice').val()
     };
-    console.log(`API POST ${boms_endpoint} with: `, {...bom_payload});
+    console.log(`API POST ${Bom.endpoint} with: `, {...payload});
     $.ajax({
         type: 'PUT',
-        data: bom_payload,
-        url: boms_endpoint,
+        data: payload,
+        url: Bom.endpoint,
         dataType:'JSON',
         success: () => {
             // clear fields
@@ -274,7 +275,7 @@ function delete_bom(event) {
     var promises = []
     // compile promises
     ids.forEach(id => {
-        let endpoint = `${boms_endpoint}${id}`;
+        let endpoint = `${Bom.endpoint}${id}`;
         console.log(`API DELETE ${endpoint}`);
         promises.push(
             $.ajax({

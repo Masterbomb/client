@@ -1,3 +1,5 @@
+import { Supplier } from './interfaces/supplier';
+
 // global suppliers state
 var $table = $('#suppliersTable').bootstrapTable();
 var $remove = $('#deleteSupplier');
@@ -47,9 +49,9 @@ function get_state() {
     $table.bootstrapTable('showLoading');
     console.log("Fetching supplier table state");
     // ajax call to suppliers api
-    console.log(`API GET ${suppliers_endpoint}`);
+    console.log(`API GET ${Supplier.endpoint}`);
     $.get({
-        url: suppliers_endpoint
+        url: Supplier.endpoint
     }).then((data) => {
         // update global state
         suppliers = data.reverse();
@@ -114,14 +116,14 @@ function post_supplier(event) {
         return false;
     }
     // start post request
-    const newSupplier = {
+    const payload:Supplier.Schema = {
         'name': $('#supplierForm #supplierName').val(),
         'website': $('#supplierForm #supplierWebsite').val()
     };
-    console.log(`API POST ${suppliers_endpoint} with: `, {...newSupplier});
+    console.log(`API POST ${Supplier.endpoint} with: `, {...payload});
     $.post({
-        data: newSupplier,
-        url: suppliers_endpoint,
+        data: payload,
+        url: Supplier.endpoint,
         dataType:'JSON'
     }).then(() => {
        // clear fields
@@ -153,16 +155,16 @@ function put_supplier(event) {
         return false;
     }
     // here only a single id field can be selected so this getter is safe
-    const supplier_payload = {
+    const payload:Supplier.Schema = {
         'id': get_id_selection()[0],
         'name': $('#supplierForm #supplierName').val(),
         'website': $('#supplierForm #supplierWebsite').val()
     };
-    console.log(`API POST ${suppliers_endpoint} with: `, {...supplier_payload});
+    console.log(`API POST ${Supplier.endpoint} with: `, {...payload});
     $.ajax({
         type: 'PUT',
-        data: supplier_payload,
-        url: suppliers_endpoint,
+        data: payload,
+        url: Supplier.endpoint,
         dataType:'JSON',
         success: () => {
             // clear fields
@@ -186,7 +188,7 @@ function delete_supplier(event) {
     var promises = []
     // compile promises
     ids.forEach(id => {
-        let endpoint = `${suppliers_endpoint}${id}`;
+        let endpoint = `${Supplier.endpoint}${id}`;
         console.log(`API DELETE ${endpoint}`);
         promises.push(
             $.ajax({

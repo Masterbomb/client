@@ -2,10 +2,7 @@ import express from 'express';
 import createError from 'http-errors';
 import path from "path";
 import pageRoutes from './routes';
-import apiRoutes from './api';
 import dotenv from "dotenv";
-import { postgres } from './db';
-import { logger_middleware } from './api/v1/middlewares/logger';
 import { NextFunction, Response, Request } from 'express';
 
 // load environment settings
@@ -15,15 +12,12 @@ dotenv.config();
 // as if it were an environment variable
 const port = process.env.SERVER_PORT;
 
-// connect db
-postgres.connect_db();
 
 const app = express();
 // setup view engine
 app.set('views', path.join(__dirname, '../dist/views'));
 app.set('view engine', 'ejs');
 
-app.use(logger_middleware);
 // use express types (make sure this is defined in front of the routes!)
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -31,7 +25,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 // add page routes
 app.use(pageRoutes);
-app.use(apiRoutes);
 // start webserver
 app.listen(port, () => {
     console.log(`server started at http://localhost:${ port }`);

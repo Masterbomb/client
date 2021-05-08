@@ -1,7 +1,4 @@
 // global parts state
-const parts_endpoint = '/v1/parts/';
-const suppliers_endpoint = '/v1/suppliers/'
-const manufacturers_endpoint = '/v1/manufacturers/'
 var parts = [];
 var suppliers = [];
 var manufacturers = [];

@@ -1,5 +1,6 @@
+import { Project } from './interfaces/project';
+
 // global suppliers state
-const projects_endpoint = '/v1/projects/';
 var $table = $('#projectsTable').bootstrapTable();
 var $remove = $('#deleteProject');
 var $add = $('#addProject');
@@ -47,9 +48,9 @@ function loading_template() {
 function get_state() {
     $table.bootstrapTable('showLoading');
     console.log("Fetching project table state");
-    console.log(`API GET ${projects_endpoint}`);
+    console.log(`API GET ${Project.endpoint}`);
     $.get({
-        url: projects_endpoint
+        url: Project.endpoint 
     }).then((data) => {
         // update global state
         projects = data.reverse();
@@ -115,14 +116,14 @@ function post_project(event) {
         return false;
     }
     // start post request
-    const project_payload = {
+    const payload:Project.Schema = {
         'name': $('#projectForm #projectName').val(),
         'description': $('#projectForm #projectDesc').val()
     };
-    console.log(`API POST ${projects_endpoint} with: `, {...project_payload});
+    console.log(`API POST ${Project.endpoint} with: `, {...payload});
     $.post({
-        data: project_payload,
-        url: projects_endpoint,
+        data: payload,
+        url: Project.endpoint,
         dataType:'JSON'
     }).then(() => {
        // clear fields
@@ -155,16 +156,16 @@ function put_project(event) {
     }
     // here only a single id field can be selected so this getter is safe
     // start post request
-    const project_payload = {
+    const payload:Project.Schema = {
         'id': get_id_selection()[0],
         'name': $('#projectForm #projectName').val(),
         'description': $('#projectForm #projectDesc').val()
     };
-    console.log(`API POST ${projects_endpoint} with: `, {...project_payload});
+    console.log(`API POST ${Project.endpoint} with: `, {...payload});
     $.ajax({
         type: 'PUT',
-        data: project_payload,
-        url: projects_endpoint,
+        data: payload,
+        url: Project.endpoint,
         dataType:'JSON',
         success: () => {
             // clear fields
@@ -188,7 +189,7 @@ function delete_project(event) {
     var promises = []
     // compile promises
     ids.forEach(id => {
-        let endpoint = `${projects_endpoint}${id}`;
+        let endpoint = `${Project.endpoint}${id}`;
         console.log(`API DELETE ${endpoint}`);
         promises.push(
             $.ajax({

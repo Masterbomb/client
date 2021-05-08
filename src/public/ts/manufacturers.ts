@@ -1,5 +1,4 @@
 // global manufacturers state
-const manufacturers_endpoint = '/v1/manufacturers/';
 var manufacturers = [];
 var $table = $('#manufacturersTable').bootstrapTable();
 var $remove = $('#deleteManufacturer');

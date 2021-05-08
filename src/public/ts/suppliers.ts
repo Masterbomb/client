@@ -1,5 +1,4 @@
 // global suppliers state
-const suppliers_endpoint = '/v1/suppliers/';
 var $table = $('#suppliersTable').bootstrapTable();
 var $remove = $('#deleteSupplier');
 var $add = $('#addSupplier');

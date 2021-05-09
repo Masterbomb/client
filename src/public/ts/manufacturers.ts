@@ -1,3 +1,5 @@
+import * as bootstrap from "bootstrap";
+import $ from "jquery";
 import { Mf } from "./interfaces";
 import { Requests } from "./requests";
 
@@ -9,7 +11,7 @@ var $add = $('#addManufacturer');
 var $edit = $('#editManufacturer');
 var $post = $('#post');
 var $put = $('#put');
-var selections = [];
+var selections:number[] = [];
 
 // DOM Ready
 $(() => {
@@ -28,7 +30,7 @@ $(() => {
         selections = get_id_selection();
     });
     // once data is loaded into table hide the loading screen
-    $table.on('post-body.bs.table', function (e, args) {
+    $table.on('post-body.bs.table', function (_:JQuery.Event, _1:any) {
         $table.bootstrapTable('hideLoading');
     });
     console.log("Manufacturers DOM Ready");
@@ -36,13 +38,13 @@ $(() => {
 });
 
 // get the ids of all selected elements
-function get_id_selection () {
+function get_id_selection ():number[] {
     return $.map($table.bootstrapTable('getSelections'), function (row) {
         return row.id;
     })
 }
 
-function loading_template() {
+function loading_template():string {
     return '<div class="spinner-border text-light" role="status"><span class="sr-only">Loading...</span></div>'
 }
 
@@ -65,10 +67,10 @@ function get_state() {
 }
 
 // spawn manufacturer form modal
-function add(event) {
+function add(event:JQuery.Event) {
     event.preventDefault();
     // clear inputs set button
-    $('#manufacturerForm input').each(function (index, val) {
+    $('#manufacturerForm input').each(function (_:number, _1:HTMLElement) {
         $(this).val('');
     });
     $post.prop("hidden", false);
@@ -79,11 +81,12 @@ function add(event) {
     $('#formModal').modal();
 }
 
-function edit(event) {
+function edit(event:JQuery.Event) {
     event.preventDefault();
     // inputs reflect selection
+    let id = get_id_selection()[0]
     manufacturers.forEach(manufacturer => {
-        if (manufacturer.state === true) {
+        if (manufacturer.id === id) {
             $('#manufacturerName').val(manufacturer.name);
         }
     });
@@ -95,110 +98,88 @@ function edit(event) {
 }
 
 // post new manufacturer
-function post_manufacturer(event) {
-    console.log("Validating manufacturer form");
+function post_manufacturer(event:JQuery.Event) {
     event.preventDefault();
-    // basic form validation
-    var error_flag = false;
-    $('#manufacturerForm input').each(function (index, val) {
-        if ($(this).val() === '') {
-            error_flag = true;
-        }
-    });
-    if (error_flag == true) {
-        console.error("Validation failed");
-        alert("Enter all required fields");
-        return false;
-    }
+    if (!form_validation()) { return }
     // start post request
-    const manufacturer_payload = {
-        'name': $('#manufacturerForm #manufacturerName').val()
+    const payload:Mf.Schema = {
+        'name': $('#manufacturerForm #manufacturerName').val() as string
     };
-    console.log(`API POST ${manufacturers_endpoint} with: `, {...manufacturer_payload});
-    $.post({
-        data: manufacturer_payload,
-        url: manufacturers_endpoint,
-        dataType:'JSON'
-    }).then(() => {
-       // clear fields
-       $('#manufacturerForm input').val('');
-       // hide modal
-       $('#formModal').modal('toggle');
-       // rerequest get requests
-       get_state();
-    }).catch(() => {
-        console.error("API request failed");
-        alert("API Request Failed");
-    });
-}
-
-// put new manufacturer
-function put_manufacturer(event) {
-    console.log("Validating manufacturer form");
-    event.preventDefault();
-    // basic form validation
-    var error_flag = false;
-    $('#manufacturerForm input').each(function (index, val) {
-        if ($(this).val() === '') {
-            error_flag = true;
-        }
-    });
-    if (error_flag == true) {
-        console.error("Validation failed");
-        alert("Enter all required fields");
-        return false;
-    }
-    // here only a single id field can be selected so this getter is safe
-    const manufacturer_payload = {
-        'id': get_id_selection()[0],
-        'name': $('#manufacturerForm #manufacturerName').val(),
-    };
-    console.log(`API POST ${manufacturers_endpoint} with: `, {...manufacturer_payload});
-    $.ajax({
-        type: 'PUT',
-        data: manufacturer_payload,
-        url: manufacturers_endpoint,
-        dataType:'JSON',
-        success: () => {
+    console.log(`API POST ${Mf.endpoint} with: `, {...payload});
+    Requests.post(Mf.endpoint, payload).then((response) => {
+        if (response != null) {
             // clear fields
             $('#manufacturerForm input').val('');
             // hide modal
             $('#formModal').modal('toggle');
             // rerequest get requests
             get_state();
-        },
-        error: (xhr) => {
-            console.error(`API request failed with status code: ${xhr.status}`);
-            alert("API Request Failed");
+        } else {
+            console.log("Received null response. skipping");
+        }
+    }).catch(() => {
+        console.error("API ");
+    });
+}
+
+function put_manufacturer(event:JQuery.Event):void {
+    event.preventDefault();
+    if (!form_validation()) { return }
+    // here only a single id field can be selected so this getter is safe
+    const payload:Mf.Schema = {
+        'id': get_id_selection()[0],
+        'name': $('#manufacturerForm #manufacturerName').val() as string,
+    };
+    Requests.put<Mf.Schema>(Mf.endpoint, payload).then((response) => {
+        if (response != null) {
+            // clear fields
+            $('#manufacturerForm input').val('');
+            // hide modal
+            $('#formModal').modal('toggle');
+            // rerequest get requests
+            get_state();
+        } else {
+            console.log("Received null response. skipping");
         }
     });
 }
 
-// delete one or more manufacturers
-function delete_manufacturer(event) {
+function form_validation():boolean {
+    console.log("Validating manufacturer form");
+    // basic form validation
+    let error_flag:boolean = false;
+    $('#manufacturerForm input').each(function (_:number, _1:HTMLElement) {
+        if ($(this).val() === '') {
+            error_flag = true;
+        }
+    });
+    if (!error_flag) {
+        console.log("Failed form validation check")
+        alert("Enter all required fields");
+        return false;
+    }
+    return true;
+}
+
+function delete_manufacturer(event:JQuery.Event) {
     event.preventDefault();
-    var ids = get_id_selection();
-    var promises = []
+    let ids = get_id_selection();
+    let promises:Promise<Mf.Schema | void>[] = []
     // compile promises
     ids.forEach(id => {
-        let endpoint = `${manufacturers_endpoint}${id}`;
-        console.log(`API DELETE ${endpoint}`);
+        let endpoint = `${Mf.endpoint}${id}`;
         promises.push(
-            $.ajax({
-                url: endpoint,
-                type: 'DELETE',
-                dataType: 'json',
-                success: function() {},
-                error: function(response) {
-                    console.log(response);
-                    console.error("API request failed");
-                    alert("API Request Failed");
+            Requests.del(endpoint).then((response) => {
+                if (response != null) {
+                    console.log("API request succeded");
+                } else {
+                    console.log("Received null response. skipping");
                 }
             })
         );
-    })
+    });
     console.log("Promises: ", promises);
-    Promise.all(promises).then( () => {
+    Promise.all(promises).then(() => {
         get_state();
-    })
+    });
 }

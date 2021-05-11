@@ -1,14 +1,16 @@
-import { Supplier } from './interfaces/supplier';
+import $ from "jquery";
+import { Requests } from "./requests";
+import { Supplier } from './interfaces';
+import { get_selected } from "./helpers";
 
 // global suppliers state
+var suppliers:Supplier.Schema[];
 var $table = $('#suppliersTable').bootstrapTable();
 var $remove = $('#deleteSupplier');
 var $add = $('#addSupplier');
 var $edit = $('#editSupplier');
 var $post = $('#post');
 var $put = $('#put');
-var selections = [];
-var suppliers = [];
 
 // DOM Ready
 $(() => {
@@ -22,57 +24,37 @@ $(() => {
     $table.on('check.bs.table uncheck.bs.table ' + 'check-all.bs.table uncheck-all.bs.table',function () {
         $remove.prop('disabled', !$table.bootstrapTable('getSelections').length);
         $edit.prop('disabled', $table.bootstrapTable('getSelections').length !== 1);
-        // save your data, here just save the current page
-        selections = get_id_selection();
     });
     // once data is loaded into table hide the loading screen
-    $table.on('post-body.bs.table', function (e, args) {
+    $table.on('post-body.bs.table', function (_:JQuery.Event, _1:any) {
         $table.bootstrapTable('hideLoading');
     });
     console.log("Suppliers DOM Ready");
     get_state();
 });
 
-// get the ids of all selected elements
-function get_id_selection () {
-    return $.map($table.bootstrapTable('getSelections'), function (row) {
-        return row.id;
-    })
-}
-
-function loading_template() {
-    return '<div class="spinner-border text-light" role="status"><span class="sr-only">Loading...</span></div>'
-}
-
 // populate table with current state
-function get_state() {
+function get_state():void {
     $table.bootstrapTable('showLoading');
     console.log("Fetching supplier table state");
     // ajax call to suppliers api
-    console.log(`API GET ${Supplier.endpoint}`);
-    $.get({
-        url: Supplier.endpoint
-    }).then((data) => {
-        // update global state
-        suppliers = data.reverse();
-        console.log("Response: ", suppliers);
-        // inject html for table use load for event listener
-        // temp timeout for load wheel debug
-        setTimeout(() => {$table.bootstrapTable('load', suppliers)}, 1000);
-    }).catch(() => {
-        console.error("API request failed");
-        alert("API Request Failed");
-    });
+    Requests.get<Supplier.Schema>(Supplier.endpoint).then((response) => {
+        if (response != null) {
+            suppliers = response.data.reverse();
+            console.log("Response Data: ", suppliers);
+            $table.bootstrapTable('load', suppliers);
+        }
+    })
     // manually reset remove and edit options since the table selections are cleared on reload
     $remove.prop('disabled', true);
     $edit.prop('disabled', true);
 }
 
 // spawn supplier form modal
-function add(event) {
+function add(event:JQuery.Event):void {
     event.preventDefault();
     // clear inputs set button
-    $('#supplierForm input').each(function (index, val) {
+    $('#supplierForm input').each(function (_:number, _1:HTMLElement) {
         $(this).val('');
     });
     $post.prop("hidden", false);
@@ -83,11 +65,12 @@ function add(event) {
     $('#formModal').modal();
 }
 
-function edit(event) {
+function edit(event:JQuery.Event):void {
     event.preventDefault();
     // inputs reflect selection
+    let id = get_selected($table)[0]
     suppliers.forEach(supplier => {
-        if (supplier.state === true) {
+        if (supplier.id === id) {
             $('#supplierName').val(supplier.name);
             $('#supplierWebsite').val(supplier.website);
         }
@@ -99,109 +82,62 @@ function edit(event) {
     $('#formModal').modal();
 }
 
-// post new supplier
-function post_supplier(event) {
-    console.log("Validating supplier form");
+function post_supplier(event:JQuery.Event):void {
     event.preventDefault();
-    // basic form validation
-    var error_flag = false;
-    $('#supplierForm input').each(function (index, val) {
-        if ($(this).val() === '') {
-            error_flag = true;
-        }
-    });
-    if (error_flag == true) {
-        console.error("Validation failed");
-        alert("Enter all required fields");
-        return false;
-    }
     // start post request
+    let name = $('#supplierForm #supplierName').val() as string
+    let website = $('#supplierForm #supplierWebsite').val() as string
     const payload:Supplier.Schema = {
-        'name': $('#supplierForm #supplierName').val(),
-        'website': $('#supplierForm #supplierWebsite').val()
+        'name': name,
+        'website': website
     };
     console.log(`API POST ${Supplier.endpoint} with: `, {...payload});
-    $.post({
-        data: payload,
-        url: Supplier.endpoint,
-        dataType:'JSON'
-    }).then(() => {
-       // clear fields
-       $('#supplierForm input').val('');
-       // hide modal
-       $('#formModal').modal('toggle');
-       // rerequest get requests
-       get_state();
-    }).catch(() => {
-        console.error("API request failed");
-        alert("API Request Failed");
-    });
-}
-
-// put new supplier
-function put_supplier(event) {
-    console.log("Validating supplier form");
-    event.preventDefault();
-    // basic form validation
-    var error_flag = false;
-    $('#supplierForm input').each(function (index, val) {
-        if ($(this).val() === '') {
-            error_flag = true;
-        }
-    });
-    if (error_flag == true) {
-        console.error("Validation failed");
-        alert("Enter all required fields");
-        return false;
-    }
-    // here only a single id field can be selected so this getter is safe
-    const payload:Supplier.Schema = {
-        'id': get_id_selection()[0],
-        'name': $('#supplierForm #supplierName').val(),
-        'website': $('#supplierForm #supplierWebsite').val()
-    };
-    console.log(`API POST ${Supplier.endpoint} with: `, {...payload});
-    $.ajax({
-        type: 'PUT',
-        data: payload,
-        url: Supplier.endpoint,
-        dataType:'JSON',
-        success: () => {
+    Requests.post(Supplier.endpoint, payload).then((response) => {
+        if (response != null) {
             // clear fields
             $('#supplierForm input').val('');
             // hide modal
             $('#formModal').modal('toggle');
             // rerequest get requests
             get_state();
-        },
-        error: (xhr) => {
-            console.error(`API request failed with status code: ${xhr.status}`);
-            alert("API Request Failed");
+        }
+    })
+}
+
+function put_supplier(event:JQuery.Event) {
+    event.preventDefault();
+    // here only a single id field can be selected so this getter is safe
+    let id = get_selected($table)[0]
+    let name = $('#supplierForm #supplierName').val() as string
+    let website = $('#supplierForm #supplierWebsite').val() as string
+    const payload:Supplier.Schema = {
+        'id': id,
+        'name': name,
+        'website': website 
+    };
+    console.log(`API POST ${Supplier.endpoint} with: `, {...payload});
+    Requests.put(Supplier.endpoint, payload).then((response) => {
+        if (response != null) {
+            // clear fields
+            $('#supplierForm input').val('');
+            // hide modal
+            $('#formModal').modal('toggle');
+            // rerequest get requests
+            get_state();
         }
     });
 }
 
 // delete one or more suppliers
-function delete_supplier(event) {
+function delete_supplier(event:JQuery.Event):void {
     event.preventDefault();
-    var ids = get_id_selection();
-    var promises = []
+    var ids = get_selected($table);
+    var promises:Promise<any>[] = []
     // compile promises
     ids.forEach(id => {
         let endpoint = `${Supplier.endpoint}${id}`;
-        console.log(`API DELETE ${endpoint}`);
         promises.push(
-            $.ajax({
-                url: endpoint,
-                type: 'DELETE',
-                dataType: 'json',
-                success: function() {},
-                error: function(response) {
-                    console.log(response);
-                    console.error("API request failed");
-                    alert("API Request Failed");
-                }
-            })
+            Requests.del(endpoint)
         );
     })
     console.log("Promises: ", promises);

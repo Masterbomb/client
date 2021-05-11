@@ -11,8 +11,8 @@ export namespace Part {
         id?:number;
         name:string;
         description:string;
-        manufacturer_id?:string;
-        supplier_id?:string;
+        manufacturer_id?:number;
+        supplier_id?:number;
         unit_price:number;
     }
     export const endpoint = process.env.API_BASE_PATH + '/parts';

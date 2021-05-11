@@ -62,7 +62,7 @@ function get_state() {
                 bom.supplier = find_match(suppliers, bom.supplier_id);
             });
             // temp timeout for load wheel debug
-            setTimeout(() => {$table.bootstrapTable('load', boms)}, 1000);
+            $table.bootstrapTable('load', boms);
             console.log("Compiled Response: ", boms);
             populate_selectors();
         });

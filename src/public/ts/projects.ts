@@ -57,7 +57,7 @@ function get_state() {
         console.log("Response: ", projects);
         // inject html for table use load for event listener
         // temp timeout for load wheel debug
-        setTimeout(() => {$table.bootstrapTable('load', projects)}, 1000);
+        $table.bootstrapTable('load', projects);
     }).catch(() => {
         console.error("API request failed");
         alert("API Request Failed");

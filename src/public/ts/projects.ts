@@ -41,6 +41,7 @@ function get_state():void {
         if (response != null) {
             projects = response.data.reverse()
             console.log("Response Data: ", projects);
+            $table.bootstrapTable('load', projects);
         }
     })
     // manually reset remove and edit options since the table selections are cleared on reload

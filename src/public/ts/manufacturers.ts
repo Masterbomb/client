@@ -1,7 +1,7 @@
-import * as bootstrap from "bootstrap";
 import $ from "jquery";
 import { Mf } from "./interfaces";
 import { Requests } from "./requests";
+import { get_selected } from "./helpers"
 
 // global manufacturers state
 var manufacturers:Mf.Schema[];
@@ -11,7 +11,6 @@ var $add = $('#addManufacturer');
 var $edit = $('#editManufacturer');
 var $post = $('#post');
 var $put = $('#put');
-var selections:number[] = [];
 
 // DOM Ready
 $(() => {
@@ -26,8 +25,6 @@ $(() => {
     $table.on('check.bs.table uncheck.bs.table ' + 'check-all.bs.table uncheck-all.bs.table',function () {
         $remove.prop('disabled', !$table.bootstrapTable('getSelections').length);
         $edit.prop('disabled', $table.bootstrapTable('getSelections').length !== 1);
-        // save your data, here just save the current page
-        selections = get_id_selection();
     });
     // once data is loaded into table hide the loading screen
     $table.on('post-body.bs.table', function (_:JQuery.Event, _1:any) {
@@ -37,28 +34,15 @@ $(() => {
     get_state();
 });
 
-// get the ids of all selected elements
-function get_id_selection ():number[] {
-    return $.map($table.bootstrapTable('getSelections'), function (row) {
-        return row.id;
-    })
-}
-
-function loading_template():string {
-    return '<div class="spinner-border text-light" role="status"><span class="sr-only">Loading...</span></div>'
-}
-
 // populate table with current state
-function get_state() {
+function get_state():void {
     $table.bootstrapTable('showLoading');
     console.log("Fetching manufacturer table state");
     Requests.get<Mf.Schema>(Mf.endpoint).then((response) => {
         if (response != null) {
             manufacturers = response.data.reverse();
             console.log("Response Data: ", manufacturers);
-            setTimeout(() => {$table.bootstrapTable('load', manufacturers)}, 1000);
-        } else {
-            console.log("Received null response. skipping");
+            $table.bootstrapTable('load', manufacturers);
         }
     })
     // manually reset remove and edit options since the table selections are cleared on reload
@@ -67,7 +51,7 @@ function get_state() {
 }
 
 // spawn manufacturer form modal
-function add(event:JQuery.Event) {
+function add(event:JQuery.Event):void {
     event.preventDefault();
     // clear inputs set button
     $('#manufacturerForm input').each(function (_:number, _1:HTMLElement) {
@@ -81,10 +65,10 @@ function add(event:JQuery.Event) {
     $('#formModal').modal();
 }
 
-function edit(event:JQuery.Event) {
+function edit(event:JQuery.Event):void {
     event.preventDefault();
     // inputs reflect selection
-    let id = get_id_selection()[0]
+    let id = get_selected($table)[0]
     manufacturers.forEach(manufacturer => {
         if (manufacturer.id === id) {
             $('#manufacturerName').val(manufacturer.name);
@@ -98,9 +82,8 @@ function edit(event:JQuery.Event) {
 }
 
 // post new manufacturer
-function post_manufacturer(event:JQuery.Event) {
+function post_manufacturer(event:JQuery.Event):void {
     event.preventDefault();
-    if (!form_validation()) { return }
     // start post request
     const payload:Mf.Schema = {
         'name': $('#manufacturerForm #manufacturerName').val() as string
@@ -114,21 +97,18 @@ function post_manufacturer(event:JQuery.Event) {
             $('#formModal').modal('toggle');
             // rerequest get requests
             get_state();
-        } else {
-            console.log("Received null response. skipping");
         }
-    }).catch(() => {
-        console.error("API ");
     });
 }
 
 function put_manufacturer(event:JQuery.Event):void {
     event.preventDefault();
-    if (!form_validation()) { return }
     // here only a single id field can be selected so this getter is safe
+    let id = get_selected($table)[0]
+    let name = $('#manufacturerForm #manufacturerName').val() as string
     const payload:Mf.Schema = {
-        'id': get_id_selection()[0],
-        'name': $('#manufacturerForm #manufacturerName').val() as string,
+        'id': id,
+        'name': name,
     };
     Requests.put<Mf.Schema>(Mf.endpoint, payload).then((response) => {
         if (response != null) {
@@ -138,44 +118,19 @@ function put_manufacturer(event:JQuery.Event):void {
             $('#formModal').modal('toggle');
             // rerequest get requests
             get_state();
-        } else {
-            console.log("Received null response. skipping");
         }
     });
 }
 
-function form_validation():boolean {
-    console.log("Validating manufacturer form");
-    // basic form validation
-    let error_flag:boolean = false;
-    $('#manufacturerForm input').each(function (_:number, _1:HTMLElement) {
-        if ($(this).val() === '') {
-            error_flag = true;
-        }
-    });
-    if (!error_flag) {
-        console.log("Failed form validation check")
-        alert("Enter all required fields");
-        return false;
-    }
-    return true;
-}
-
-function delete_manufacturer(event:JQuery.Event) {
+function delete_manufacturer(event:JQuery.Event):void {
     event.preventDefault();
-    let ids = get_id_selection();
-    let promises:Promise<Mf.Schema | void>[] = []
+    let ids = get_selected($table);
+    let promises:Promise<any>[] = []
     // compile promises
     ids.forEach(id => {
         let endpoint = `${Mf.endpoint}${id}`;
         promises.push(
-            Requests.del(endpoint).then((response) => {
-                if (response != null) {
-                    console.log("API request succeded");
-                } else {
-                    console.log("Received null response. skipping");
-                }
-            })
+            Requests.del(endpoint)
         );
     });
     console.log("Promises: ", promises);

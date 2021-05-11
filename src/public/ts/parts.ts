@@ -1,7 +1,12 @@
+import $ from "jquery";
+import { Requests } from "./requests";
+import { get_selected } from "./helpers"
+import { Part, Supplier, Mf } from './interfaces';
+
 // global parts state
-var parts = [];
-var suppliers = [];
-var manufacturers = [];
+var parts:Part.Schema[] = [];
+var suppliers:Supplier.Schema[] = [];
+var manufacturers:Mf.Schema[] = [];
 var $table = $('#partsTable').bootstrapTable();
 var $remove = $('#deletePart');
 var $add = $('#addPart');
@@ -10,7 +15,6 @@ var $post = $('#post');
 var $put = $('#put');
 var $supplier_selector = $('#supplier-picker');
 var $manufacturer_selector = $('#manufacturer-picker');
-var selections = [];
 
 // DOM Ready
 $(() => {
@@ -27,11 +31,9 @@ $(() => {
     $table.on('check.bs.table uncheck.bs.table ' + 'check-all.bs.table uncheck-all.bs.table',function () {
         $remove.prop('disabled', !$table.bootstrapTable('getSelections').length);
         $edit.prop('disabled', $table.bootstrapTable('getSelections').length !== 1);
-        // save your data, here just save the current page
-        selections = get_id_selection();
     });
     // once data is loaded into table hide the loading screen
-    $table.on('post-body.bs.table', function (e, args) {
+    $table.on('post-body.bs.table', function (_:JQuery.Event, _1:any) {
         $table.bootstrapTable('hideLoading');
     });
     console.log("parts DOM Ready");
@@ -39,54 +41,37 @@ $(() => {
 });
 
 // populate table with current state
-function get_state() {
+function get_state():void {
     $table.bootstrapTable('showLoading');
     console.log("Fetching part table state");
-    // ajax call to parts api
-    console.log(`API GET ${parts_endpoint}`);
-    $.get({
-        url: parts_endpoint
-    }).then((data) => {
-        // update global state
-        parts = data.reverse();
-        console.log("Response: ", parts);
-        // update global state with supplier and manufacturers
-        get_fks().then( () =>{
-            // replace ids in parts table with name identifiers
-            parts.forEach(part => {
-                part.manufacturer = find_match(manufacturers, part.manufacturer_id);
-                part.supplier = find_match(suppliers, part.supplier_id);
+    Requests.get<Part.Schema>(Part.endpoint).then((response) => {
+        if (response != null) {
+            parts = response.data.reverse()
+            console.log("Response Data: ", parts);
+            // update global state with supplier and manufacturers
+            get_fks().then( () => {
+                // replace ids in parts table with name identifiers
+                parts.forEach(part => {
+                    part.manufacturer = find_match(manufacturers, part.manufacturer_id);
+                    part.supplier = find_match(suppliers, part.supplier_id);
+                });
+                // temp timeout for load wheel debug
+                $table.bootstrapTable('load', parts);
+                console.log("Compiled Response: ", parts);
+                populate_selectors();
             });
-            // temp timeout for load wheel debug
-            $table.bootstrapTable('load', parts);
-            console.log("Compiled Response: ", parts);
-            populate_selectors();
-        });
-    }).catch(() => {
-        console.error("API request failed");
-        alert("API Request Failed");
+        }
     });
     // manually reset remove and edit options since the table selections are cleared on reload
     $remove.prop('disabled', true);
     $edit.prop('disabled', true);
 }
 
-function find_match(arr, id) {
+function find_match(arr:Mf.Schema[] | Supplier.Schema[], id:number) {
     if (arr === undefined || arr.length == 0 || id === null) {
         return undefined;
     }
     return arr.filter((el) => {return (el.id === id)})[0].name
-}
-
-// get the ids of all selected elements
-function get_id_selection () {
-    return $.map($table.bootstrapTable('getSelections'), function (row) {
-        return row.id;
-    })
-}
-
-function loading_template() {
-    return '<div class="spinner-border text-light" role="status"><span class="sr-only">Loading...</span></div>'
 }
 
 async function get_fks() {
@@ -118,10 +103,10 @@ async function get_fks() {
 }
 
 // spawn part form modal
-function add(event) {
+function add(event:JQuery.Event):void {
     event.preventDefault();
     // clear inputs set button
-    $('#partForm input').each(function (index, val) {
+    $('#partForm input').each(function (_:number, _1:HTMLElement) {
         $(this).val('');
     });
     $post.prop("hidden", false);
@@ -132,11 +117,12 @@ function add(event) {
     $('#formModal').modal();
 }
 
-function edit(event) {
+function edit(event:JQuery.Event):void {
     event.preventDefault();
+    let id = get_selected($table)[0]
     // inputs reflect selection
     parts.forEach(part => {
-        if (part.state === true) {
+        if (part.id === id) {
             $('#partName').val(part.name);
             $('#partDesc').val(part.description);
             $('#partUnitPrice').val(part.unit_price);
@@ -155,8 +141,8 @@ function edit(event) {
 
 function populate_selectors() {
     // clear selectors
-    $supplier_selector.empty('#supplier-picker');
-    $manufacturer_selector.empty('#manufacturer-picker');
+    $supplier_selector.empty();
+    $manufacturer_selector.empty();
     // populate select pickers
     for (let idx in suppliers) {
        $supplier_selector.append($('<option />').val(suppliers[idx].id).text(suppliers[idx].name));
@@ -171,119 +157,76 @@ function populate_selectors() {
 }
 
 // post new part
-function post_part(event) {
-    console.log("Validating part form");
+function post_part(event:JQuery.Event):void {
     event.preventDefault();
-    // basic form validation
-    // var error_flag = false;
-    // $('#partForm input').each(function (index, val) {
-    //     if ($(this).val() === '') {
-    //         error_flag = true;
-    //     }
-    // });
-    // if (!$('#supplier-picker').val()) {
-    //     error_flag = true;
-    // }
-    // if (error_flag == true) {
-    //     console.error("Validation failed");
-    //     alert("Enter all required fields");
-    //     return false;
-    // }
-    // start post request
-    const part_payload = {
-        'name': $('#partForm #partName').val(),
-        'description': $('#partForm #partDesc').val(),
-        'manufacturer_id': $('#partForm #manufacturer-picker').val(),
-        'supplier_id': $('#partForm #supplier-picker').val(),
-        'unit_price': $('#partForm #partUnitPrice').val()
+    let name = $('#partForm #partName').val() as string
+    let description = $('#partForm #partDesc').val() as string
+    let manufacturer_id = $('#partForm #manufacturer-picker').val() as number
+    let supplier_id = $('#partForm #supplier-picker').val() as number
+    let unit_price = $('#partForm #partUnitPrice').val() as number
+    const payload:Part.Schema = {
+        'name': name,
+        'description': description,
+        'manufacturer_id': manufacturer_id,
+        'supplier_id': supplier_id,
+        'unit_price': unit_price
     };
-    console.log(`API POST ${parts_endpoint} with: `, {...part_payload});
-    $.post({
-        data: part_payload,
-        url: parts_endpoint,
-        dataType:'JSON'
-    }).then(() => {
-       // clear fields
-       $('#partForm input').val('');
-       $('#partForm textarea').val('');
-       $manufacturer_selector.selectpicker();
-       $supplier_selector.selectpicker();
-       // hide modal
-       $('#formModal').modal('toggle');
-       // rerequest get requests
-       get_state();
-    }).catch(() => {
-        console.error("API request failed");
-        alert("API Request Failed");
+    console.log(`API POST ${Part.endpoint} with: `, {...payload});
+    Requests.post(Part.endpoint, payload).then((response) => {
+        if (response != null) {
+            // clear fields
+            $('#partForm input').val('');
+            $('#partForm textarea').val('');
+            $manufacturer_selector.selectpicker();
+            $supplier_selector.selectpicker();
+            // hide modal
+            $('#formModal').modal('toggle');
+            // rerequest get requests
+            get_state();
+        }
     });
 }
 
 // put new part
-function put_part(event) {
-    console.log("Validating part form");
+function put_part(event:JQuery.Event):void {
     event.preventDefault();
-    // basic form validation
-    // var error_flag = false;
-    // $('#partForm input').each(function (index, val) {
-    //     if ($(this).val() === '') {
-    //         error_flag = true;
-    //     }
-    // });
-    // if (error_flag == true) {
-    //     console.error("Validation failed");
-    //     alert("Enter all required fields");
-    //     return false;
-    // }
     // here only a single id field can be selected so this getter is safe
-    const part_payload = {
-        'id': get_id_selection()[0],
-        'name': $('#partForm #partName').val(),
-        'description': $('#partForm #partDesc').val(),
-        'manufacturer_id': $('#partForm #manufacturer-picker').val(),
-        'supplier_id': $('#partForm #supplier-picker').val(),
-        'unit_price': $('#partForm #partUnitPrice').val()
+    let id = get_selected($table)[0]
+    let name = $('#partForm #partName').val() as string
+    let description = $('#partForm #partDesc').val() as string
+    let manufacturer_id = $('#partForm #manufacturer-picker').val() as number
+    let supplier_id = $('#partForm #supplier-picker').val() as number
+    let unit_price = $('#partForm #partUnitPrice').val() as number
+    const payload:Part.Schema = {
+        'id': id,
+        'name': name,
+        'description': description,
+        'manufacturer_id': manufacturer_id,
+        'supplier_id': supplier_id,
+        'unit_price': unit_price
     };
-    console.log(`API POST ${parts_endpoint} with: `, {...part_payload});
-    $.ajax({
-        type: 'PUT',
-        data: part_payload,
-        url: parts_endpoint,
-        dataType:'JSON',
-        success: () => {
+    console.log(`API POST ${Part.endpoint} with: `, {...payload});
+    Requests.put(Part.endpoint, payload).then((response) => {
+        if (response != null) {
             // clear fields
             $('#partForm input').val('');
             // hide modal
             $('#formModal').modal('toggle');
             // rerequest get requests
             get_state();
-        },
-        error: (xhr) => {
-            console.error(`API request failed with status code: ${xhr.status}`);
-            alert("API Request Failed");
         }
     });
 }
 
-// delete one or more parts
-function delete_part(event) {
+function delete_part(event:JQuery.Event):void {
     event.preventDefault();
-    var ids = get_id_selection();
-    var promises = []
+    var ids = get_selected($table);
+    var promises:Promise<any>[] = []
     // compile promises
     ids.forEach(id => {
-        let endpoint = `${parts_endpoint}${id}`;
-        console.log(`API DELETE ${endpoint}`);
+        let endpoint = `${Part.endpoint}${id}`;
         promises.push(
-            $.ajax({
-                url: endpoint,
-                type: 'DELETE',
-                dataType: 'json',
-                success: function() {},
-                error: function(response) {
-                    console.log(response);
-                    console.error("API request failed");
-                }
-            })
+            Requests.del(endpoint) 
         );
     })
     console.log("Promises: ", promises);

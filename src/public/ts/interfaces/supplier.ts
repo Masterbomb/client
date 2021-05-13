@@ -7,8 +7,22 @@
  */
 
 export namespace Supplier {
-    export interface Schema {
-        id?:number;
+    export interface PostSchema {
+        name:string;
+        website:string;
+    }
+    export interface PutSchema {
+        id:number;
+        name:string;
+        website:string;
+    }
+    export interface GetSchema {
+        id:number;
+        name:string;
+        website:string;
+    }
+    export interface StateSchema {
+        id:number;
         name:string;
         website:string;
     }

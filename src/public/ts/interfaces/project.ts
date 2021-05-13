@@ -7,8 +7,23 @@
  */
 
 export namespace Project {
-    export interface Schema {
-        id?:number;
+
+    export interface PostSchema {
+        name:string;
+        description:string;
+    }
+    export interface PutSchema {
+        id:number;
+        name:string;
+        description:string;
+    }
+    export interface GetSchema {
+        id:number;
+        name:string;
+        description:string;
+    }
+    export interface StateSchema {
+        id:number;
         name:string;
         description:string;
     }

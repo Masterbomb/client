@@ -1,23 +1,23 @@
 import $ from "jquery";
 import { Requests } from "./requests";
-import { get_selected } from "./helpers"
+import { get_selected } from "./helpers";
 import { Project } from './interfaces/project';
 
 // global suppliers state
-var projects:Project.Schema[] = [];
-var $table = $('#projectsTable').bootstrapTable();
-var $remove = $('#deleteProject');
-var $add = $('#addProject');
-var $edit = $('#editProject');
-var $post = $('#post');
-var $put = $('#put');
+let projects:Project.Schema[] = [];
+const $table = $('#projectsTable').bootstrapTable();
+const $remove = $('#deleteProject');
+const $add = $('#addProject');
+const $edit = $('#editProject');
+const $post = $('#post');
+const $put = $('#put');
 
 // DOM Ready
 $(() => {
     $('#nav-item-projects').addClass('active');
     $add.on('click', add);
     $post.on('click', post_project);
-    $edit.on('click', edit); 
+    $edit.on('click', edit);
     $put.on('click', put_project);
     $remove.on('click', delete_project);
     // register table events
@@ -39,11 +39,11 @@ function get_state():void {
     console.log("Fetching project table state");
     Requests.get<Project.Schema>(Project.endpoint).then((response) => {
         if (response != null) {
-            projects = response.data.reverse()
+            projects = response.data.reverse();
             console.log("Response Data: ", projects);
             $table.bootstrapTable('load', projects);
         }
-    })
+    });
     // manually reset remove and edit options since the table selections are cleared on reload
     $remove.prop('disabled', true);
     $edit.prop('disabled', true);
@@ -68,7 +68,7 @@ function add(event:JQuery.Event):void {
 function edit(event:JQuery.Event):void {
     event.preventDefault();
     // inputs reflect selection
-    let id = get_selected($table)[0]
+    const id = get_selected($table)[0];
     projects.forEach(project => {
         if (project.id === id) {
             $('#projectName').val(project.name);
@@ -85,8 +85,8 @@ function edit(event:JQuery.Event):void {
 function post_project(event:JQuery.Event):void {
     event.preventDefault();
     // start post request
-    let name = $('#projectForm #projectName').val() as string
-    let description = $('#projectForm #projectDesc').val() as string
+    const name = $('#projectForm #projectName').val() as string;
+    const description = $('#projectForm #projectDesc').val() as string;
     const payload:Project.Schema = {
         'name': name,
         'description': description
@@ -108,9 +108,9 @@ function put_project(event:JQuery.Event):void {
     event.preventDefault();
     // here only a single id field can be selected so this getter is safe
     // start post request
-    let id = get_selected($table)[0];
-    let name = $('#projectForm #projectName').val() as string;
-    let description = $('#projectForm #projectDesc').val() as string;
+    const id = get_selected($table)[0];
+    const name = $('#projectForm #projectName').val() as string;
+    const description = $('#projectForm #projectDesc').val() as string;
     const payload:Project.Schema = {
         'id': id,
         'name': name,
@@ -124,24 +124,24 @@ function put_project(event:JQuery.Event):void {
            // hide modal
            $('#formModal').modal('toggle');
            // rerequest get requests
-           get_state(); 
+           get_state();
         }
     });
 }
 
 function delete_project(event:JQuery.Event):void {
     event.preventDefault();
-    let ids = get_selected($table);
-    let promises:Promise<any>[] = []
+    const ids = get_selected($table);
+    const promises:Promise<any>[] = [];
     // compile promises
     ids.forEach(id => {
-        let endpoint = `${Project.endpoint}${id}`;
+        const endpoint = `${Project.endpoint}${id}`;
         promises.push(
-           Requests.del(endpoint) 
+           Requests.del(endpoint)
         );
-    })
+    });
     console.log("Promises: ", promises);
     Promise.all(promises).then( () => {
         get_state();
-    })
+    });
 }

@@ -6,7 +6,13 @@
  * @module bom.ts
  */
 
-export interface Schema {
+export interface StateSchema {
+    project_id:number;
+    part_id:number;
+    quantity:number;
+    net_price:number;
+}
+export interface PayloadSchema {
     project_id:number;
     part_id:number;
     quantity:number;

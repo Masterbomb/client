@@ -1,20 +1,22 @@
 import $ from "jquery";
-import { Requests } from "./requests";
-import { get_selected } from "./helpers"
+import 'bootstrap-select/dist/css/bootstrap-select.css';
+// import 'bootstrap-table/dist/bootstrap-table.min.css'
+import * as Requests from "./requests";
+import { get_selected } from "./helpers";
 import { Part, Supplier, Mf } from './interfaces';
 
 // global parts state
-var parts:Part.StateSchema[] = [];
-var suppliers:Supplier.StateSchema[] = [];
-var manufacturers:Mf.StateSchema[] = [];
-var $table = $('#partsTable').bootstrapTable();
-var $remove = $('#deletePart');
-var $add = $('#addPart');
-var $edit = $('#editPart');
-var $post = $('#post');
-var $put = $('#put');
-var $supplier_selector = $('#supplier-picker');
-var $manufacturer_selector = $('#manufacturer-picker');
+let parts:Part.StateSchema[] = [];
+let suppliers:Supplier.StateSchema[] = [];
+let manufacturers:Mf.StateSchema[] = [];
+const $table:any = $('#partsTable');
+const $remove = $('#deletePart');
+const $add = $('#addPart');
+const $edit = $('#editPart');
+const $post = $('#post');
+const $put = $('#put');
+const $supplier_selector = $('#supplier-picker');
+const $manufacturer_selector = $('#manufacturer-picker');
 
 // DOM Ready
 $(() => {
@@ -22,18 +24,18 @@ $(() => {
     $('#nav-item-parts').addClass('active');
     $add.on('click', add);
     $post.on('click', post_part);
-    $edit.on('click', edit); 
+    $edit.on('click', edit);
     $put.on('click', put_part);
     $remove.on('click', delete_part);
     $supplier_selector.selectpicker();
     $manufacturer_selector.selectpicker();
     // register table events
-    $table.on('check.bs.table uncheck.bs.table ' + 'check-all.bs.table uncheck-all.bs.table',function () {
+    $table.on('check.bs.table uncheck.bs.table ' + 'check-all.bs.table uncheck-all.bs.table', () => {
         $remove.prop('disabled', !$table.bootstrapTable('getSelections').length);
         $edit.prop('disabled', $table.bootstrapTable('getSelections').length !== 1);
     });
     // once data is loaded into table hide the loading screen
-    $table.on('post-body.bs.table', function (_:JQuery.Event, _1:any) {
+    $table.on('post-body.bs.table', (_:JQuery.Event, _1:any) => {
         $table.bootstrapTable('hideLoading');
     });
     console.log("parts DOM Ready");
@@ -46,7 +48,7 @@ function get_state():void {
     console.log("Fetching part table state");
     Requests.get<Part.GetSchema>(Part.endpoint).then((response) => {
         if (response != null) {
-            parts = response.data.reverse()
+            parts = response.data.reverse();
             console.log("Response Data: ", parts);
             // update global state with supplier and manufacturers
             get_foreign_states().then(() => {
@@ -68,15 +70,15 @@ function get_state():void {
 }
 
 function find_match(arr:Mf.GetSchema[] | Supplier.GetSchema[], id:number | undefined): string | undefined{
-    if (arr === undefined || arr.length == 0 || id === undefined) {
+    if (arr === undefined || arr.length === 0 || id === undefined) {
         return undefined;
     }
-    return arr.filter((el) => {return (el.id === id)})[0].name
+    return arr.filter((el) => {return (el.id === id);})[0].name;
 }
 
 async function get_foreign_states():Promise<void[]> {
     // compile queries and end with promise.all
-    let promises = []
+    const promises = [];
     promises.push(
         Requests.get<Supplier.GetSchema>(Supplier.endpoint).then((response) => {
             if (response != null) {
@@ -89,7 +91,7 @@ async function get_foreign_states():Promise<void[]> {
             if (response != null) {
                 manufacturers = response.data;
             }
-        })    
+        })
     );
     return Promise.all(promises);
 }
@@ -111,7 +113,7 @@ function add(event:JQuery.Event):void {
 
 function edit(event:JQuery.Event):void {
     event.preventDefault();
-    let id = get_selected($table)[0]
+    const id = get_selected($table)[0];
     // inputs reflect selection
     parts.forEach(part => {
         if (part.id === id) {
@@ -136,14 +138,14 @@ function populate_selectors() {
     $supplier_selector.empty();
     $manufacturer_selector.empty();
     // populate select pickers
-    for (let idx in suppliers) {
-       $supplier_selector.append($('<option />').val(suppliers[idx].id).text(suppliers[idx].name));
-    }
-    for (let idx in manufacturers) {
-       $manufacturer_selector.append($('<option />').val(manufacturers[idx].id).text(manufacturers[idx].name));
-    }
-    $supplier_selector.selectpicker(); 
-    $manufacturer_selector.selectpicker(); 
+    suppliers.forEach((supplier) => {
+        $supplier_selector.append($('<option />').val(supplier.id).text(supplier.name));
+    });
+    manufacturers.forEach((manufacturer)=>{
+        $manufacturer_selector.append($('<option />').val(manufacturer.id).text(manufacturer.name));
+    });
+    $supplier_selector.selectpicker();
+    $manufacturer_selector.selectpicker();
     $supplier_selector.selectpicker('refresh');
     $manufacturer_selector.selectpicker('refresh');
 }
@@ -151,11 +153,11 @@ function populate_selectors() {
 // post new part
 function post_part(event:JQuery.Event):void {
     event.preventDefault();
-    let name = $('#partForm #partName').val() as string
-    let description = $('#partForm #partDesc').val() as string
-    let manufacturer_id = $('#partForm #manufacturer-picker').val() as number
-    let supplier_id = $('#partForm #supplier-picker').val() as number
-    let unit_price = $('#partForm #partUnitPrice').val() as number
+    const name = $('#partForm #partName').val() as string;
+    const description = $('#partForm #partDesc').val() as string;
+    const manufacturer_id = $('#partForm #manufacturer-picker').val() as number;
+    const supplier_id = $('#partForm #supplier-picker').val() as number;
+    const unit_price = $('#partForm #partUnitPrice').val() as number;
     const payload:Part.PostSchema = {
         'name': name,
         'description': description,
@@ -183,12 +185,12 @@ function post_part(event:JQuery.Event):void {
 function put_part(event:JQuery.Event):void {
     event.preventDefault();
     // here only a single id field can be selected so this getter is safe
-    let id = get_selected($table)[0]
-    let name = $('#partForm #partName').val() as string
-    let description = $('#partForm #partDesc').val() as string
-    let manufacturer_id = $('#partForm #manufacturer-picker').val() as number
-    let supplier_id = $('#partForm #supplier-picker').val() as number
-    let unit_price = $('#partForm #partUnitPrice').val() as number
+    const id = get_selected($table)[0];
+    const name = $('#partForm #partName').val() as string;
+    const description = $('#partForm #partDesc').val() as string;
+    const manufacturer_id = $('#partForm #manufacturer-picker').val() as number;
+    const supplier_id = $('#partForm #supplier-picker').val() as number;
+    const unit_price = $('#partForm #partUnitPrice').val() as number;
     const payload:Part.PutSchema = {
         'id': id,
         'name': name,
@@ -212,17 +214,17 @@ function put_part(event:JQuery.Event):void {
 
 function delete_part(event:JQuery.Event):void {
     event.preventDefault();
-    var ids = get_selected($table);
-    var promises:Promise<any>[] = []
+    const ids = get_selected($table);
+    const promises:Promise<any>[] = [];
     // compile promises
     ids.forEach(id => {
-        let endpoint = `${Part.endpoint}${id}`;
+        const endpoint = `${Part.endpoint}${id}`;
         promises.push(
-            Requests.del(endpoint) 
+            Requests.del(endpoint)
         );
-    })
+    });
     console.log("Promises: ", promises);
     Promise.all(promises).then( () => {
         get_state();
-    })
+    });
 }

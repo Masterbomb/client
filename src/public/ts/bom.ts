@@ -1,20 +1,19 @@
-import { Bom } from './interfaces/bom';
-import { Mf } from './interfaces/manufacturer';
-import { Supplier } from './interfaces/supplier';
+import { Bom, Mf, Supplier } from './interfaces';
+import { find_match, get_selected } from './helpers'
 
 // global bom state
-var boms = [];
-var suppliers = [];
-var manufacturers = [];
-var $table = $('#bomsTable').bootstrapTable();
-var $remove = $('#deletebom');
-var $add = $('#addbom');
-var $edit = $('#editbom');
-var $post = $('#post');
-var $put = $('#put');
-var $supplier_selector = $('#supplier-picker');
-var $manufacturer_selector = $('#manufacturer-picker');
-var selections = [];
+let boms:Bom.StateSchema[] = [];
+let suppliers:Supplier.StateSchema[] = [];
+let manufacturers:Mf.StateSchema[] = [];
+const $table = $('#bomsTable').bootstrapTable();
+const $remove = $('#deletebom');
+const $add = $('#addbom');
+const $edit = $('#editbom');
+const $post = $('#post');
+const $put = $('#put');
+const $supplier_selector = $('#supplier-picker');
+const $manufacturer_selector = $('#manufacturer-picker');
+let selections = [];
 
 // DOM Ready
 $(() => {
@@ -22,20 +21,18 @@ $(() => {
     $('#nav-item-boms').addClass('active');
     $add.on('click', add);
     $post.on('click', post_bom);
-    $edit.on('click', edit); 
+    $edit.on('click', edit);
     $put.on('click', put_bom);
     $remove.on('click', delete_bom);
     $supplier_selector.selectpicker();
     $manufacturer_selector.selectpicker();
     // register table events
-    $table.on('check.bs.table uncheck.bs.table ' + 'check-all.bs.table uncheck-all.bs.table',function () {
+    $table.on('check.bs.table uncheck.bs.table ' + 'check-all.bs.table uncheck-all.bs.table', () => {
         $remove.prop('disabled', !$table.bootstrapTable('getSelections').length);
         $edit.prop('disabled', $table.bootstrapTable('getSelections').length !== 1);
-        // save your data, here just save the current page
-        selections = get_id_selection();
     });
     // once data is loaded into table hide the loading screen
-    $table.on('post-body.bs.table', function (e, args) {
+    $table.on('post-body.bs.table', (_:JQuery.Event, _1:any) => {
         $table.bootstrapTable('hideLoading');
     });
     console.log("boms DOM Ready");
@@ -55,7 +52,7 @@ function get_state() {
         boms = data.reverse();
         console.log("Response: ", boms);
         // update global state with supplier and manufacturers
-        get_fks().then( () =>{
+        get_foreign_states().then( () =>{
             // replace ids in boms table with name identifiers
             boms.forEach(bom => {
                 bom.manufacturer = find_match(manufacturers, bom.manufacturer_id);
@@ -75,27 +72,9 @@ function get_state() {
     $edit.prop('disabled', true);
 }
 
-function find_match(arr, id) {
-    if (arr === undefined || arr.length == 0 || id === null) {
-        return undefined;
-    }
-    return arr.filter((el) => {return (el.id === id)})[0].name
-}
-
-// get the ids of all selected elements
-function get_id_selection () {
-    return $.map($table.bootstrapTable('getSelections'), function (row) {
-        return row.id;
-    })
-}
-
-function loading_template() {
-    return '<div class="spinner-border text-light" role="status"><span class="sr-only">Loading...</span></div>'
-}
-
-async function get_fks() {
+async function get_foreign_states() {
     // compile ajax queries and end with promise.all
-    let promises = []
+    const promises = [];
     console.log(`API GET ${Supplier.endpoint}`);
     promises.push(
         $.get({
@@ -122,7 +101,7 @@ async function get_fks() {
 }
 
 // spawn bom form modal
-function add(event) {
+function add(event:JQuery.Event):void {
     event.preventDefault();
     // clear inputs set button
     $('#bomForm input').each(function (index, val) {
@@ -136,7 +115,7 @@ function add(event) {
     $('#formModal').modal();
 }
 
-function edit(event) {
+function edit(event:JQuery.Event):void {
     event.preventDefault();
     // inputs reflect selection
     boms.forEach(bom => {
@@ -162,39 +141,23 @@ function populate_selectors() {
     $supplier_selector.empty('#supplier-picker');
     $manufacturer_selector.empty('#manufacturer-picker');
     // populate select pickers
-    for (let idx in suppliers) {
+    for (const idx in suppliers) {
        $supplier_selector.append($('<option />').val(suppliers[idx].id).text(suppliers[idx].name));
     }
-    for (let idx in manufacturers) {
+    for (const idx in manufacturers) {
        $manufacturer_selector.append($('<option />').val(manufacturers[idx].id).text(manufacturers[idx].name));
     }
-    $supplier_selector.selectpicker(); 
-    $manufacturer_selector.selectpicker(); 
+    $supplier_selector.selectpicker();
+    $manufacturer_selector.selectpicker();
     $supplier_selector.selectpicker('refresh');
     $manufacturer_selector.selectpicker('refresh');
 }
 
 // post new bom
-function post_bom(event) {
-    console.log("Validating bom form");
+function post_bom(event:JQuery.Event):void {
     event.preventDefault();
-    // basic form validation
-    // var error_flag = false;
-    // $('#bomForm input').each(function (index, val) {
-    //     if ($(this).val() === '') {
-    //         error_flag = true;
-    //     }
-    // });
-    // if (!$('#supplier-picker').val()) {
-    //     error_flag = true;
-    // }
-    // if (error_flag == true) {
-    //     console.error("Validation failed");
-    //     alert("Enter all required fields");
-    //     return false;
-    // }
     // start post request
-    const payload:Bom.Schema = {
+    const payload:Bom.StateSchema = {
         'name': $('#bomForm #bomName').val(),
         'description': $('#bomForm #bomDesc').val(),
         'manufacturer_id': $('#bomForm #manufacturer-picker').val(),
@@ -223,21 +186,8 @@ function post_bom(event) {
 }
 
 // put new bom
-function put_bom(event) {
-    console.log("Validating bom form");
+function put_bom(event:JQuery.Event):void {
     event.preventDefault();
-    // basic form validation
-    // var error_flag = false;
-    // $('#bomForm input').each(function (index, val) {
-    //     if ($(this).val() === '') {
-    //         error_flag = true;
-    //     }
-    // });
-    // if (error_flag == true) {
-    //     console.error("Validation failed");
-    //     alert("Enter all required fields");
-    //     return false;
-    // }
     // here only a single id field can be selected so this getter is safe
     const payload:Bom.Schema = {
         'id': get_id_selection()[0],
@@ -269,29 +219,29 @@ function put_bom(event) {
 }
 
 // delete one or more boms
-function delete_bom(event) {
+function delete_bom(event:JQuery.Event):void {
     event.preventDefault();
-    var ids = get_id_selection();
-    var promises = []
+    const ids = get_id_selection();
+    const promises = [];
     // compile promises
     ids.forEach(id => {
-        let endpoint = `${Bom.endpoint}${id}`;
+        const endpoint = `${Bom.endpoint}${id}`;
         console.log(`API DELETE ${endpoint}`);
         promises.push(
             $.ajax({
                 url: endpoint,
                 type: 'DELETE',
                 dataType: 'json',
-                success: function() {},
-                error: function(response) {
+                success() {},
+                error(response) {
                     console.log(response);
                     console.error("API request failed");
                 }
             })
         );
-    })
+    });
     console.log("Promises: ", promises);
     Promise.all(promises).then( () => {
         get_state();
-    })
+    });
 }

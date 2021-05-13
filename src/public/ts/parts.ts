@@ -69,13 +69,6 @@ function get_state():void {
     $edit.prop('disabled', true);
 }
 
-function find_match(arr:Mf.GetSchema[] | Supplier.GetSchema[], id:number | undefined): string | undefined{
-    if (arr === undefined || arr.length === 0 || id === undefined) {
-        return undefined;
-    }
-    return arr.filter((el) => {return (el.id === id);})[0].name;
-}
-
 async function get_foreign_states():Promise<void[]> {
     // compile queries and end with promise.all
     const promises = [];

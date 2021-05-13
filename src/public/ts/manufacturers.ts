@@ -1,16 +1,16 @@
 import $ from "jquery";
 import { Mf } from "./interfaces";
-import { Requests } from "./requests";
-import { get_selected } from "./helpers"
+import * as Requests from "./requests";
+import { get_selected } from "./helpers";
 
 // global manufacturers state
-var manufacturers:Mf.Schema[];
-var $table = $('#manufacturersTable').bootstrapTable();
-var $remove = $('#deleteManufacturer');
-var $add = $('#addManufacturer');
-var $edit = $('#editManufacturer');
-var $post = $('#post');
-var $put = $('#put');
+let manufacturers:Mf.StateSchema[];
+const $table = $('#manufacturersTable').bootstrapTable();
+const $remove = $('#deleteManufacturer');
+const $add = $('#addManufacturer');
+const $edit = $('#editManufacturer');
+const $post = $('#post');
+const $put = $('#put');
 
 // DOM Ready
 $(() => {
@@ -18,7 +18,7 @@ $(() => {
     $('#nav-item-manufacturers').addClass('active');
     $add.on('click', add);
     $post.on('click', post_manufacturer);
-    $edit.on('click', edit); 
+    $edit.on('click', edit);
     $put.on('click', put_manufacturer);
     $remove.on('click', delete_manufacturer);
     // register table events
@@ -38,13 +38,13 @@ $(() => {
 function get_state():void {
     $table.bootstrapTable('showLoading');
     console.log("Fetching manufacturer table state");
-    Requests.get<Mf.Schema>(Mf.endpoint).then((response) => {
+    Requests.get<Mf.GetSchema>(Mf.endpoint).then((response) => {
         if (response != null) {
             manufacturers = response.data.reverse();
             console.log("Response Data: ", manufacturers);
             $table.bootstrapTable('load', manufacturers);
         }
-    })
+    });
     // manually reset remove and edit options since the table selections are cleared on reload
     $remove.prop('disabled', true);
     $edit.prop('disabled', true);
@@ -68,7 +68,7 @@ function add(event:JQuery.Event):void {
 function edit(event:JQuery.Event):void {
     event.preventDefault();
     // inputs reflect selection
-    let id = get_selected($table)[0]
+    const id = get_selected($table)[0];
     manufacturers.forEach(manufacturer => {
         if (manufacturer.id === id) {
             $('#manufacturerName').val(manufacturer.name);
@@ -85,7 +85,7 @@ function edit(event:JQuery.Event):void {
 function post_manufacturer(event:JQuery.Event):void {
     event.preventDefault();
     // start post request
-    const payload:Mf.Schema = {
+    const payload:Mf.PostSchema = {
         'name': $('#manufacturerForm #manufacturerName').val() as string
     };
     console.log(`API POST ${Mf.endpoint} with: `, {...payload});
@@ -104,13 +104,13 @@ function post_manufacturer(event:JQuery.Event):void {
 function put_manufacturer(event:JQuery.Event):void {
     event.preventDefault();
     // here only a single id field can be selected so this getter is safe
-    let id = get_selected($table)[0]
-    let name = $('#manufacturerForm #manufacturerName').val() as string
-    const payload:Mf.Schema = {
+    const id = get_selected($table)[0];
+    const name = $('#manufacturerForm #manufacturerName').val() as string;
+    const payload:Mf.PutSchema = {
         'id': id,
         'name': name,
     };
-    Requests.put<Mf.Schema>(Mf.endpoint, payload).then((response) => {
+    Requests.put(Mf.endpoint, payload).then((response) => {
         if (response != null) {
             // clear fields
             $('#manufacturerForm input').val('');
@@ -124,11 +124,11 @@ function put_manufacturer(event:JQuery.Event):void {
 
 function delete_manufacturer(event:JQuery.Event):void {
     event.preventDefault();
-    let ids = get_selected($table);
-    let promises:Promise<any>[] = []
+    const ids = get_selected($table);
+    const promises:Promise<any>[] = [];
     // compile promises
     ids.forEach(id => {
-        let endpoint = `${Mf.endpoint}${id}`;
+        const endpoint = `${Mf.endpoint}${id}`;
         promises.push(
             Requests.del(endpoint)
         );

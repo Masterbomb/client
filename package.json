@@ -11,7 +11,7 @@
     "start-db": "docker-compose -f docker/docker-compose.yaml --env-file ../.env up -d",
     "stop-db": "docker-compose -f docker/docker-compose.yaml --env-file ../.env down",
     "dev": "",
-    "tsc": "tsc",
+    "tsc": "tsc --module 'es2020'",
     "probe-api": "cd tests/api && ansible-playbook --connection=local -i 127.0.0.1, main.yaml && cd ../..",
     "dev:start": "npm run build && npm run start",
     "prebuild": "npm run clean",

@@ -6,8 +6,8 @@
  * @module index.ts
  */
 
-export { Supplier } from './supplier';
-export { Project } from './project';
-export { Mf } from './manufacturer';
-export { Bom } from './bom';
-export { Part } from './part';
+export * as Supplier from './supplier';
+export * as Project from './project';
+export * as Mf from './manufacturer';
+export * as Bom from './bom';
+export * as Part from './part';

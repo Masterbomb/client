@@ -4,20 +4,20 @@ import { Supplier } from './interfaces';
 import { get_selected } from "./helpers";
 
 // global suppliers state
-var suppliers:Supplier.Schema[];
-var $table = $('#suppliersTable').bootstrapTable();
-var $remove = $('#deleteSupplier');
-var $add = $('#addSupplier');
-var $edit = $('#editSupplier');
-var $post = $('#post');
-var $put = $('#put');
+let suppliers:Supplier.Schema[];
+const $table = $('#suppliersTable').bootstrapTable();
+const $remove = $('#deleteSupplier');
+const $add = $('#addSupplier');
+const $edit = $('#editSupplier');
+const $post = $('#post');
+const $put = $('#put');
 
 // DOM Ready
 $(() => {
     $('#nav-item-suppliers').addClass('active');
     $add.on('click', add);
     $post.on('click', post_supplier);
-    $edit.on('click', edit); 
+    $edit.on('click', edit);
     $put.on('click', put_supplier);
     $remove.on('click', delete_supplier);
     // register table events
@@ -44,7 +44,7 @@ function get_state():void {
             console.log("Response Data: ", suppliers);
             $table.bootstrapTable('load', suppliers);
         }
-    })
+    });
     // manually reset remove and edit options since the table selections are cleared on reload
     $remove.prop('disabled', true);
     $edit.prop('disabled', true);
@@ -68,7 +68,7 @@ function add(event:JQuery.Event):void {
 function edit(event:JQuery.Event):void {
     event.preventDefault();
     // inputs reflect selection
-    let id = get_selected($table)[0]
+    const id = get_selected($table)[0];
     suppliers.forEach(supplier => {
         if (supplier.id === id) {
             $('#supplierName').val(supplier.name);
@@ -85,8 +85,8 @@ function edit(event:JQuery.Event):void {
 function post_supplier(event:JQuery.Event):void {
     event.preventDefault();
     // start post request
-    let name = $('#supplierForm #supplierName').val() as string
-    let website = $('#supplierForm #supplierWebsite').val() as string
+    const name = $('#supplierForm #supplierName').val() as string;
+    const website = $('#supplierForm #supplierWebsite').val() as string;
     const payload:Supplier.Schema = {
         'name': name,
         'website': website
@@ -101,19 +101,19 @@ function post_supplier(event:JQuery.Event):void {
             // rerequest get requests
             get_state();
         }
-    })
+    });
 }
 
 function put_supplier(event:JQuery.Event) {
     event.preventDefault();
     // here only a single id field can be selected so this getter is safe
-    let id = get_selected($table)[0]
-    let name = $('#supplierForm #supplierName').val() as string
-    let website = $('#supplierForm #supplierWebsite').val() as string
+    const id = get_selected($table)[0];
+    const name = $('#supplierForm #supplierName').val() as string;
+    const website = $('#supplierForm #supplierWebsite').val() as string;
     const payload:Supplier.Schema = {
         'id': id,
         'name': name,
-        'website': website 
+        'website': website
     };
     console.log(`API POST ${Supplier.endpoint} with: `, {...payload});
     Requests.put(Supplier.endpoint, payload).then((response) => {
@@ -131,17 +131,17 @@ function put_supplier(event:JQuery.Event) {
 // delete one or more suppliers
 function delete_supplier(event:JQuery.Event):void {
     event.preventDefault();
-    var ids = get_selected($table);
-    var promises:Promise<any>[] = []
+    const ids = get_selected($table);
+    const promises:Promise<any>[] = [];
     // compile promises
     ids.forEach(id => {
-        let endpoint = `${Supplier.endpoint}${id}`;
+        const endpoint = `${Supplier.endpoint}${id}`;
         promises.push(
             Requests.del(endpoint)
         );
-    })
+    });
     console.log("Promises: ", promises);
     Promise.all(promises).then( () => {
         get_state();
-    })
+    });
 }

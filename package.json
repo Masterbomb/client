@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "description": "��#\u0000 \u0000M\u0000a\u0000s\u0000t\u0000e\u0000r\u0000 \u0000B\u0000o\u0000m\u0000b\u0000\r\u0000 \u0000\r\u0000 \u0000M\u0000o\u0000d\u0000i\u0000f\u0000i\u0000e\u0000d\u0000:\u0000 \u00002\u00000\u00002\u00001\u0000-\u00000\u00002\u0000\r\u0000 \u0000\r\u0000 \u0000B\u0000i\u0000l\u0000l\u0000 \u0000o\u0000f\u0000 \u0000M\u0000a\u0000t\u0000e\u0000r\u0000i\u0000a\u0000l\u0000s\u0000 \u0000i\u0000n\u0000 \u0000o\u0000n\u0000e\u0000 \u0000p\u0000l\u0000a\u0000c\u0000e\u0000.\u0000\r\u0000 \u0000",
   "main": "dist/index.js",
+  "type": "module",
   "scripts": {
     "clean": "rm -rf dist/*",
-    "copy-assets": "ts-node tools/assets",
+    "copy-assets": "ts-node tools/assets.ts",
     "lint": "tslint -c tslint.json -p tsconfig.json --fix",
     "start-db": "docker-compose -f docker/docker-compose.yaml --env-file ../.env up -d",
     "stop-db": "docker-compose -f docker/docker-compose.yaml --env-file ../.env down",
-    "initdb": "ts-node tools/initdb",
-    "dev": "webpack --watch",
+    "dev": "",
     "tsc": "tsc",
     "probe-api": "cd tests/api && ansible-playbook --connection=local -i 127.0.0.1, main.yaml && cd ../..",
     "dev:start": "npm run build && npm run start",
@@ -31,6 +31,7 @@
   "homepage": "https://github.com/cSDes1gn/masterbomb#readme",
   "devDependencies": {
     "@types/bootstrap": "^5.0.13",
+    "@types/bootstrap-table": "^1.12.0",
     "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.11",
     "@types/http-errors": "^1.8.0",
@@ -39,13 +40,14 @@
     "nodemon": "^2.0.7",
     "shelljs": "^0.8.4",
     "ts-loader": "^9.1.2",
-    "ts-node": "^9.1.1",
-    "webpack-cli": "^4.7.0"
+    "ts-node": "^9.1.1"
   },
   "dependencies": {
     "@primer/octicons": "^13.0.0",
+    "@types/bootstrap-select": "^1.13.1",
     "@types/jquery": "^3.5.5",
     "axios": "^0.21.1",
+    "bootstrap-table": "^1.18.3",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
     "jquery": "^3.6.0",

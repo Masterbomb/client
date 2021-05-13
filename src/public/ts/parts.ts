@@ -4,9 +4,9 @@ import { get_selected } from "./helpers"
 import { Part, Supplier, Mf } from './interfaces';
 
 // global parts state
-var parts:Part.Schema[] = [];
-var suppliers:Supplier.Schema[] = [];
-var manufacturers:Mf.Schema[] = [];
+var parts:Part.StateSchema[] = [];
+var suppliers:Supplier.StateSchema[] = [];
+var manufacturers:Mf.StateSchema[] = [];
 var $table = $('#partsTable').bootstrapTable();
 var $remove = $('#deletePart');
 var $add = $('#addPart');
@@ -44,12 +44,12 @@ $(() => {
 function get_state():void {
     $table.bootstrapTable('showLoading');
     console.log("Fetching part table state");
-    Requests.get<Part.Schema>(Part.endpoint).then((response) => {
+    Requests.get<Part.GetSchema>(Part.endpoint).then((response) => {
         if (response != null) {
             parts = response.data.reverse()
             console.log("Response Data: ", parts);
             // update global state with supplier and manufacturers
-            get_fks().then( () => {
+            get_foreign_states().then(() => {
                 // replace ids in parts table with name identifiers
                 parts.forEach(part => {
                     part.manufacturer = find_match(manufacturers, part.manufacturer_id);
@@ -67,37 +67,29 @@ function get_state():void {
     $edit.prop('disabled', true);
 }
 
-function find_match(arr:Mf.Schema[] | Supplier.Schema[], id:number) {
-    if (arr === undefined || arr.length == 0 || id === null) {
+function find_match(arr:Mf.GetSchema[] | Supplier.GetSchema[], id:number | undefined): string | undefined{
+    if (arr === undefined || arr.length == 0 || id === undefined) {
         return undefined;
     }
     return arr.filter((el) => {return (el.id === id)})[0].name
 }
 
-async function get_fks() {
-    // compile ajax queries and end with promise.all
+async function get_foreign_states():Promise<void[]> {
+    // compile queries and end with promise.all
     let promises = []
-    console.log(`API GET ${suppliers_endpoint}`);
     promises.push(
-        $.get({
-            url: `${suppliers_endpoint}`
-        }).then((data) => {
-            suppliers = data;
-            console.log("Response: ", suppliers);
-        }).catch(() => {
-            console.error("API request failed");
+        Requests.get<Supplier.GetSchema>(Supplier.endpoint).then((response) => {
+            if (response != null) {
+                suppliers = response.data;
+            }
         })
     );
-    console.log(`API GET ${manufacturers_endpoint}`);
     promises.push(
-        $.get({
-            url: `${manufacturers_endpoint}`
-        }).then((data) => {
-            manufacturers = data;
-            console.log("Response: ", manufacturers);
-        }).catch(() => {
-            console.error("API request failed");
-        })
+        Requests.get<Mf.GetSchema>(Mf.endpoint).then((response) => {
+            if (response != null) {
+                manufacturers = response.data;
+            }
+        })    
     );
     return Promise.all(promises);
 }
@@ -164,7 +156,7 @@ function post_part(event:JQuery.Event):void {
     let manufacturer_id = $('#partForm #manufacturer-picker').val() as number
     let supplier_id = $('#partForm #supplier-picker').val() as number
     let unit_price = $('#partForm #partUnitPrice').val() as number
-    const payload:Part.Schema = {
+    const payload:Part.PostSchema = {
         'name': name,
         'description': description,
         'manufacturer_id': manufacturer_id,
@@ -197,7 +189,7 @@ function put_part(event:JQuery.Event):void {
     let manufacturer_id = $('#partForm #manufacturer-picker').val() as number
     let supplier_id = $('#partForm #supplier-picker').val() as number
     let unit_price = $('#partForm #partUnitPrice').val() as number
-    const payload:Part.Schema = {
+    const payload:Part.PutSchema = {
         'id': id,
         'name': name,
         'description': description,

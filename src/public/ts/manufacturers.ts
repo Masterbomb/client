@@ -1,5 +1,5 @@
 import * as Mf from "./interfaces/manufacturer.js";
-import * as Requests from "./requests/index";
+import * as Requests from "./requests/index.js";
 import { get_selected } from "./helpers/index.js";
 
 // global manufacturers state

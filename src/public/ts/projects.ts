@@ -1,6 +1,6 @@
-import * as Requests from "./requests";
-import * as Project from './interfaces/project';
-import { get_selected } from "./helpers";
+import * as Requests from "./requests/index.js";
+import * as Project from './interfaces/project.js';
+import { get_selected } from "./helpers/index.js";
 
 // global suppliers state
 let projects:Project.StateSchema[] = [];

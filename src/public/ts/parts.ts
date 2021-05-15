@@ -1,8 +1,8 @@
-import * as Requests from "./requests/index";
-import * as Mf from './interfaces/manufacturer';
-import * as Supplier from './interfaces/supplier';
-import * as Part from './interfaces/part';
-import { get_selected, find_match } from "./helpers";
+import * as Requests from "./requests/index.js";
+import * as Mf from "./interfaces/manufacturer.js";
+import * as Supplier from "./interfaces/supplier.js";
+import * as Part from "./interfaces/part.js";
+import { get_selected, find_match } from "./helpers/index.js";
 
 // global parts state
 let parts:Part.StateSchema[] = [];

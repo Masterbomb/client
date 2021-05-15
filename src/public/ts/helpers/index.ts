@@ -1,7 +1,6 @@
-import $ from "jquery";
-import * as Supplier from "../interfaces/supplier";
-import * as Mf from "../interfaces/manufacturer";
-import * as Part from "../interfaces/part";
+import * as Supplier from "../interfaces/supplier.js";
+import * as Mf from "../interfaces/manufacturer.js";
+import * as Part from "../interfaces/part.js";
 
 // get the ids of all selected elements
 export function get_selected ($table:any):number[] {

@@ -1,5 +1,5 @@
-import * as Bom from './interfaces/bom';
-import * as Requests from './requests/index';
+import * as Bom from './interfaces/bom.js';
+import * as Requests from './requests/index.js';
 
 // global bom state
 let boms:Bom.StateSchema[] = [];

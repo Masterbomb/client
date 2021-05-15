@@ -1,7 +1,6 @@
-import $ from "jquery";
 import * as Requests from "./requests/index";
 import * as Supplier from './interfaces/supplier';
-import { get_selected } from "./helpers";
+import { get_selected } from "./helpers/index";
 
 // global suppliers state
 let suppliers:Supplier.StateSchema[];

@@ -1,6 +1,3 @@
-import $ from "jquery";
-import 'bootstrap-select/dist/css/bootstrap-select.css';
-import 'bootstrap-table/dist/bootstrap-table.min.css';
 import * as Requests from "./requests/index";
 import * as Mf from './interfaces/manufacturer';
 import * as Supplier from './interfaces/supplier';

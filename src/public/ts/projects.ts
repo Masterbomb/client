@@ -1,4 +1,3 @@
-import $ from "jquery";
 import * as Requests from "./requests";
 import * as Project from './interfaces/project';
 import { get_selected } from "./helpers";

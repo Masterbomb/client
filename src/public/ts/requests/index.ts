@@ -62,7 +62,3 @@ export async function del(endpoint:string):Promise<AxiosResponse<any> | null> {
     return null;
 }
 
-// implement multipromise requests
-// export async function all(endpoints:[]):Promise<AxiosResponse<any> | null> {
-
-// }

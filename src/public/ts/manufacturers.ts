@@ -1,7 +1,6 @@
-import $ from "jquery";
-import * as Mf from "./interfaces/manufacturer";
-import * as Requests from "./requests";
-import { get_selected } from "./helpers";
+import * as Mf from "./interfaces/manufacturer.js";
+import * as Requests from "./requests/index";
+import { get_selected } from "./helpers/index.js";
 
 // global manufacturers state
 let manufacturers:Mf.StateSchema[];

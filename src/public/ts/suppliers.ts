@@ -1,11 +1,11 @@
 import $ from "jquery";
-import { Requests } from "./requests";
-import { Supplier } from './interfaces';
+import * as Requests from "./requests/index";
+import * as Supplier from './interfaces/supplier';
 import { get_selected } from "./helpers";
 
 // global suppliers state
-let suppliers:Supplier.Schema[];
-const $table = $('#suppliersTable').bootstrapTable();
+let suppliers:Supplier.StateSchema[];
+const $table = ($('#suppliersTable') as any).bootstrapTable();
 const $remove = $('#deleteSupplier');
 const $add = $('#addSupplier');
 const $edit = $('#editSupplier');
@@ -21,12 +21,12 @@ $(() => {
     $put.on('click', put_supplier);
     $remove.on('click', delete_supplier);
     // register table events
-    $table.on('check.bs.table uncheck.bs.table ' + 'check-all.bs.table uncheck-all.bs.table',function () {
+    $table.on('check.bs.table uncheck.bs.table ' + 'check-all.bs.table uncheck-all.bs.table', () => {
         $remove.prop('disabled', !$table.bootstrapTable('getSelections').length);
         $edit.prop('disabled', $table.bootstrapTable('getSelections').length !== 1);
     });
     // once data is loaded into table hide the loading screen
-    $table.on('post-body.bs.table', function (_:JQuery.Event, _1:any) {
+    $table.on('post-body.bs.table', (_:JQuery.Event, _1:any) => {
         $table.bootstrapTable('hideLoading');
     });
     console.log("Suppliers DOM Ready");
@@ -38,7 +38,7 @@ function get_state():void {
     $table.bootstrapTable('showLoading');
     console.log("Fetching supplier table state");
     // ajax call to suppliers api
-    Requests.get<Supplier.Schema>(Supplier.endpoint).then((response) => {
+    Requests.get<Supplier.GetSchema>(Supplier.endpoint).then((response) => {
         if (response != null) {
             suppliers = response.data.reverse();
             console.log("Response Data: ", suppliers);
@@ -87,7 +87,7 @@ function post_supplier(event:JQuery.Event):void {
     // start post request
     const name = $('#supplierForm #supplierName').val() as string;
     const website = $('#supplierForm #supplierWebsite').val() as string;
-    const payload:Supplier.Schema = {
+    const payload:Supplier.PostSchema = {
         'name': name,
         'website': website
     };
@@ -110,7 +110,7 @@ function put_supplier(event:JQuery.Event) {
     const id = get_selected($table)[0];
     const name = $('#supplierForm #supplierName').val() as string;
     const website = $('#supplierForm #supplierWebsite').val() as string;
-    const payload:Supplier.Schema = {
+    const payload:Supplier.PutSchema = {
         'id': id,
         'name': name,
         'website': website

@@ -1,15 +1,17 @@
 import $ from "jquery";
 import 'bootstrap-select/dist/css/bootstrap-select.css';
-// import 'bootstrap-table/dist/bootstrap-table.min.css'
-import * as Requests from "./requests";
-import { get_selected } from "./helpers";
-import { Part, Supplier, Mf } from './interfaces';
+import 'bootstrap-table/dist/bootstrap-table.min.css';
+import * as Requests from "./requests/index";
+import * as Mf from './interfaces/manufacturer';
+import * as Supplier from './interfaces/supplier';
+import * as Part from './interfaces/part';
+import { get_selected, find_match } from "./helpers";
 
 // global parts state
 let parts:Part.StateSchema[] = [];
 let suppliers:Supplier.StateSchema[] = [];
 let manufacturers:Mf.StateSchema[] = [];
-const $table:any = $('#partsTable');
+const $table = ($('#partsTable') as any).bootstrapTable();
 const $remove = $('#deletePart');
 const $add = $('#addPart');
 const $edit = $('#editPart');

@@ -1,11 +1,11 @@
 import $ from "jquery";
-import { Requests } from "./requests";
+import * as Requests from "./requests";
+import * as Project from './interfaces/project';
 import { get_selected } from "./helpers";
-import { Project } from './interfaces/project';
 
 // global suppliers state
-let projects:Project.Schema[] = [];
-const $table = $('#projectsTable').bootstrapTable();
+let projects:Project.StateSchema[] = [];
+const $table = ($('#projectsTable') as any).bootstrapTable();
 const $remove = $('#deleteProject');
 const $add = $('#addProject');
 const $edit = $('#editProject');
@@ -21,12 +21,12 @@ $(() => {
     $put.on('click', put_project);
     $remove.on('click', delete_project);
     // register table events
-    $table.on('check.bs.table uncheck.bs.table ' + 'check-all.bs.table uncheck-all.bs.table',function () {
+    $table.on('check.bs.table uncheck.bs.table ' + 'check-all.bs.table uncheck-all.bs.table',() => {
         $remove.prop('disabled', !$table.bootstrapTable('getSelections').length);
         $edit.prop('disabled', $table.bootstrapTable('getSelections').length !== 1);
     });
     // once data is loaded into table hide the loading screen
-    $table.on('post-body.bs.table', function (_:JQuery.Event, _1:any) {
+    $table.on('post-body.bs.table', (_:JQuery.Event, _1:any) => {
         $table.bootstrapTable('hideLoading');
     });
     console.log("Projects DOM Ready");
@@ -37,7 +37,7 @@ $(() => {
 function get_state():void {
     $table.bootstrapTable('showLoading');
     console.log("Fetching project table state");
-    Requests.get<Project.Schema>(Project.endpoint).then((response) => {
+    Requests.get<Project.GetSchema>(Project.endpoint).then((response) => {
         if (response != null) {
             projects = response.data.reverse();
             console.log("Response Data: ", projects);
@@ -87,7 +87,7 @@ function post_project(event:JQuery.Event):void {
     // start post request
     const name = $('#projectForm #projectName').val() as string;
     const description = $('#projectForm #projectDesc').val() as string;
-    const payload:Project.Schema = {
+    const payload:Project.PostSchema = {
         'name': name,
         'description': description
     };
@@ -111,7 +111,7 @@ function put_project(event:JQuery.Event):void {
     const id = get_selected($table)[0];
     const name = $('#projectForm #projectName').val() as string;
     const description = $('#projectForm #projectDesc').val() as string;
-    const payload:Project.Schema = {
+    const payload:Project.PutSchema = {
         'id': id,
         'name': name,
         'description': description

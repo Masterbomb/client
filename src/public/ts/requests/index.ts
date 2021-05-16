@@ -6,7 +6,7 @@
  * @module index.ts
  */
 
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosResponse } from '../../../../node_modules/axios/index.js';
 
 export async function get<Type>(endpoint:string):Promise<AxiosResponse<Type[]> | null> {
     console.log(`API GET ${process.env.API_BASE_URL}${endpoint}`);

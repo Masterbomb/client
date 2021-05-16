@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "clean": "rm -rf dist/*",
-    "copy-assets": "mkdir -p dist/views dist/public/static dist/public/stylesheets && cp -R src/views/ dist/views/. && cp -R src/public/static dist/public/. && cp -R src/public/stylesheets dist/public/. && cp -R src/public/favicon.ico dist/public/favicon.ico ",
+    "copy-assets": "./scripts/assets.sh",
     "lint": "tslint -c tslint.json -p tsconfig.json --fix",
     "start-db": "docker-compose -f docker/docker-compose.yaml --env-file ../.env up -d",
     "stop-db": "docker-compose -f docker/docker-compose.yaml --env-file ../.env down",

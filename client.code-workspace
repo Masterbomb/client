@@ -21,6 +21,6 @@
       "source.fixAll.eslint": true
     },
     "editor.formatOnSave": true,
-    "eslint.validate": ["vue", "html", "javascript"]
+    "eslint.validate": ["vue", "html", "javascript", "typescript"]
   }
 }

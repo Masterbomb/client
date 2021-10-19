@@ -1,0 +1,26 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "extensions": {
+    "recommendations": [
+      "jcbuisson.vue",
+      "esbenp.prettier-vscode",
+      "yzhang.markdown-all-in-one",
+      "visualstudioexptteam.vscodeintellicode",
+      "eamodio.gitlens",
+      "mikestead.dotenv",
+      "dbaeumer.vscode-eslint",
+      "octref.vetur"
+    ]
+  },
+  "settings": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true
+    },
+    "editor.formatOnSave": true,
+    "eslint.validate": ["vue", "html", "javascript"]
+  }
+}

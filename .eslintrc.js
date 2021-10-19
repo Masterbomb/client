@@ -16,6 +16,25 @@ module.exports = {
   rules: {
     "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
+    "vue/no-unused-vars": [{
+      "ignorePattern": '^_',
+    }],
+    "no-unused-vars": ["error", {
+      "argsIgnorePattern": "^_",
+      "varsIgnorePattern": "^_",
+      "args": "all",
+      "vars": "all"
+    }],
+    "vue/max-attributes-per-line": ["warning", {
+      "singleline": {
+        "max": 1,
+        "allowFirstLine": true
+      },      
+      "multiline": {
+        "max": 1,
+        "allowFirstLine": false
+      }
+    }]
   },
   overrides: [
     {

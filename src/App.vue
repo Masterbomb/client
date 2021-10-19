@@ -19,6 +19,6 @@ export default Vue.extend({
 
 <style lang="scss">
 .v-application {
-  font-family: $font-family;
+  font-family: $font-family !important;
 }
 </style>

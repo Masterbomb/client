@@ -8,26 +8,59 @@
       <v-spacer />
     </v-app-bar>
     <v-navigation-drawer v-model="drawer" absolute temporary>
+      <!-- Avatar and name header -->
+      <v-list-item>
+        <v-list-item-avatar>
+          <img :src="require('@/assets/avatar.png')" />
+        </v-list-item-avatar>
+        <v-list-item-content>
+          <v-list-item-title>Christian Sargusingh</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      <v-divider />
+      <!-- sidebar options -->
       <v-list nav dense>
-        <v-list-item-group
-          v-model="group"
-          active-class="deep-purple--text text--accent-4"
-        >
-          <v-list-item>
+        <v-list-item-group v-model="group">
+          <v-list-item v-for="(item, i) in items" :key="i">
             <v-list-item-icon>
-              <v-icon>mdi-home</v-icon>
+              <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-icon>
-            <v-list-item-title>Home</v-list-item-title>
-          </v-list-item>
-
-          <v-list-item>
-            <v-list-item-icon>
-              <v-icon>mdi-account</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Account</v-list-item-title>
+            <v-list-item-title>{{ item.name }}</v-list-item-title>
           </v-list-item>
         </v-list-item-group>
       </v-list>
+      <v-divider />
+      <!-- Buttons -->
+      <v-row v-for="btn in buttons" :key="'btn-' + btn.name" style="margin: 4%">
+        <v-btn block color="primary" @click="btn.func">
+          <v-icon left>{{ btn.icon }}</v-icon>
+          {{ btn.name }}
+        </v-btn>
+      </v-row>
+      <!-- footer -->
+      <template #append>
+        <div class="pa-4">
+          <v-row align="center" justify="center">
+            <img
+              :src="require('@/assets/logo.png')"
+              height="30px"
+              width="30px"
+            />
+          </v-row>
+          <v-row align="center" justify="center" style="padding-bottom: 5%">
+            Masterbom</v-row
+          >
+          <v-row justify="space-between" class="pa-2">
+            <div>Version: 0.0.1</div>
+            <v-icon
+              @click="
+                resolveExternalURL('https://github.com/Masterbomb/client')
+              "
+              >mdi-github</v-icon
+            >
+          </v-row>
+        </div>
+      </template>
     </v-navigation-drawer>
   </div>
 </template>
@@ -39,31 +72,59 @@ export default {
   data: (): unknown => ({
     drawer: false,
     group: null,
-    options: [
+    items: [
       {
         name: "Home",
         icon: "mdi-home",
       },
       {
         name: "Projects",
-        icon: "mdi-view-list",
-      },
-      {
-        name: "Manufacturers",
-        icon: "mdi-factory",
+        icon: "mdi-cube-outline",
       },
       {
         name: "Parts",
         icon: "mdi-nut",
       },
       {
+        name: "Manufacturers",
+        icon: "mdi-factory",
+      },
+      {
         name: "Profile",
         icon: "mdi-account",
+      },
+    ],
+    buttons: [
+      {
+        name: "New Project",
+        icon: "mdi-cube-outline",
+        func: () => {
+          return;
+        },
+      },
+      {
+        name: "Register Part",
+        icon: "mdi-plus",
+        func: () => {
+          return;
+        },
+      },
+      {
+        name: "Logout",
+        icon: "mdi-logout",
+        func: () => {
+          return;
+        },
       },
     ],
   }),
   computed: {
     ...mapGetters(["authUser"]),
+  },
+  methods: {
+    resolveExternalURL(url: string): void {
+      window.open(url);
+    },
   },
 };
 </script>

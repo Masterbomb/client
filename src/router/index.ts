@@ -9,6 +9,32 @@ const routes: Array<RouteConfig> = [
     path: "/",
     name: "Console",
     component: Console,
+    // children: [
+    //   {
+    //     path: "bom",
+    //     name: "bom",
+    //     component: ,
+    //     props: true,
+    //   },
+    //   {
+    //     path: "manufacturers",
+    //     name: "manufacturers",
+    //     component: ,
+    //     props: true,
+    //   },
+    //   {
+    //     path: "suppliers",
+    //     name: "suppliers",
+    //     component: ,
+    //     props: true,
+    //   },
+    //   {
+    //     path: "parts",
+    //     name: "parts",
+    //     component: ,
+    //     props: true,
+    //   }
+    // ],
   },
 ];
 

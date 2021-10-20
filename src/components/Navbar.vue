@@ -2,7 +2,10 @@
   <div>
     <v-app-bar dense>
       <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
-      <v-toolbar-title>Masterbom</v-toolbar-title>
+      <v-spacer />
+      <img :src="require('@/assets/logo.png')" height="30px" width="30px" />
+      <v-toolbar-title style="padding-left: 1%">Masterbom</v-toolbar-title>
+      <v-spacer />
     </v-app-bar>
     <v-navigation-drawer v-model="drawer" absolute temporary>
       <v-list nav dense>
@@ -36,6 +39,28 @@ export default {
   data: (): unknown => ({
     drawer: false,
     group: null,
+    options: [
+      {
+        name: "Home",
+        icon: "mdi-home",
+      },
+      {
+        name: "Projects",
+        icon: "mdi-view-list",
+      },
+      {
+        name: "Manufacturers",
+        icon: "mdi-factory",
+      },
+      {
+        name: "Parts",
+        icon: "mdi-nut",
+      },
+      {
+        name: "Profile",
+        icon: "mdi-account",
+      },
+    ],
   }),
   computed: {
     ...mapGetters(["authUser"]),

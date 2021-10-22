@@ -7,15 +7,7 @@
   </v-app>
 </template>
 
-<script lang="ts">
-import Vue from "vue";
-
-export default Vue.extend({
-  data: () => ({
-    //
-  }),
-});
-</script>
+<script lang="ts"></script>
 
 <style lang="scss">
 .v-application {

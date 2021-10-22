@@ -21,7 +21,11 @@
       <!-- sidebar options -->
       <v-list nav dense>
         <v-list-item-group v-model="group">
-          <v-list-item v-for="(item, i) in items" :key="i">
+          <v-list-item
+            v-for="(item, i) in items"
+            :key="i"
+            @click="goToPage(item.page)"
+          >
             <v-list-item-icon>
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-icon>
@@ -62,6 +66,7 @@
         </div>
       </template>
     </v-navigation-drawer>
+    <router-view />
   </div>
 </template>
 <script lang="ts">
@@ -69,55 +74,62 @@ import { mapGetters } from "vuex";
 
 export default {
   name: "Navbar",
-  data: (): unknown => ({
-    drawer: false,
-    group: null,
-    items: [
-      {
-        name: "Home",
-        icon: "mdi-home",
-      },
-      {
-        name: "Projects",
-        icon: "mdi-cube-outline",
-      },
-      {
-        name: "Parts",
-        icon: "mdi-nut",
-      },
-      {
-        name: "Manufacturers",
-        icon: "mdi-factory",
-      },
-      {
-        name: "Profile",
-        icon: "mdi-account",
-      },
-    ],
-    buttons: [
-      {
-        name: "New Project",
-        icon: "mdi-cube-outline",
-        func: () => {
-          return;
+  data(): unknown {
+    return {
+      drawer: false,
+      group: null,
+      items: [
+        {
+          name: "Home",
+          icon: "mdi-home",
+          page: "/",
         },
-      },
-      {
-        name: "Register Part",
-        icon: "mdi-plus",
-        func: () => {
-          return;
+        {
+          name: "Projects",
+          icon: "mdi-cube-outline",
+          page: "projects",
         },
-      },
-      {
-        name: "Logout",
-        icon: "mdi-logout",
-        func: () => {
-          return;
+        {
+          name: "Parts",
+          icon: "mdi-nut",
+          page: "parts",
         },
-      },
-    ],
-  }),
+        {
+          name: "Manufacturers",
+          icon: "mdi-factory",
+          page: "manufacturers",
+        },
+        {
+          name: "Profile",
+          icon: "mdi-account",
+          page: "profile",
+        },
+      ],
+      buttons: [
+        {
+          name: "New Project",
+          icon: "mdi-cube-outline",
+          func: () => {
+            return;
+          },
+        },
+        {
+          name: "Register Part",
+          icon: "mdi-plus",
+          func: () => {
+            return;
+          },
+        },
+        {
+          name: "Logout",
+          icon: "mdi-logout",
+          func: () => {
+            return;
+          },
+        },
+      ],
+    };
+  },
   computed: {
     ...mapGetters(["authUser"]),
   },
@@ -125,7 +137,16 @@ export default {
     resolveExternalURL(url: string): void {
       window.open(url);
     },
+    // goToPage: (pageName: string): void => {
+    //   this.$log.debug("Page change to ", pageName, " requested");
+    //   if (this.$route.name !== pageName) {
+    //     this.$router.push({
+    //       name: pageName,
+    //     });
+    //   }
+    //   this.drawer = false;
+    // },
   },
 };
 </script>
-<style lang="ts"></style>
+<style lang="scss"></style>

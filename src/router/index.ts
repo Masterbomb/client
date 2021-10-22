@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import Console from "@/views/Console.vue";
+// import Manufacturers from "@/views/Manufacturers.vue";
 
 Vue.use(VueRouter);
 
@@ -10,30 +11,30 @@ const routes: Array<RouteConfig> = [
     name: "Console",
     component: Console,
     // children: [
-    //   {
-    //     path: "bom",
-    //     name: "bom",
-    //     component: ,
-    //     props: true,
-    //   },
+    //   //   {
+    //   //     path: "bom",
+    //   //     name: "bom",
+    //   //     component: ,
+    //   //     props: true,
+    //   //   },
     //   {
     //     path: "manufacturers",
     //     name: "manufacturers",
-    //     component: ,
+    //     component: Manufacturers,
     //     props: true,
     //   },
-    //   {
-    //     path: "suppliers",
-    //     name: "suppliers",
-    //     component: ,
-    //     props: true,
-    //   },
-    //   {
-    //     path: "parts",
-    //     name: "parts",
-    //     component: ,
-    //     props: true,
-    //   }
+    //   //   {
+    //   //     path: "suppliers",
+    //   //     name: "suppliers",
+    //   //     component: ,
+    //   //     props: true,
+    //   //   },
+    //   //   {
+    //   //     path: "parts",
+    //   //     name: "parts",
+    //   //     component: ,
+    //   //     props: true,
+    //   //   }
     // ],
   },
 ];

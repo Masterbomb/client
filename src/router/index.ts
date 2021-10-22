@@ -1,11 +1,11 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
-import Console from "@/views/Console.vue";
-import Manufacturers from "@/views/Manufacturers.vue";
-import Parts from "@/views/Parts.vue";
-import Bom from "@/views/Bom.vue";
-import Projects from "@/views/Projects.vue";
-import Profile from "@/views/Profile.vue";
+import Console from "../views/Console.vue";
+import Manufacturers from "../views/Manufacturers.vue";
+import Parts from "../views/Parts.vue";
+import Bom from "../views/Bom.vue";
+import Projects from "../views/Projects.vue";
+import Profile from "../views/Profile.vue";
 
 Vue.use(VueRouter);
 

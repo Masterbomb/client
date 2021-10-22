@@ -5,13 +5,12 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import { Vue, Component } from "vue-property-decorator";
 import Navbar from "@/components/Navbar.vue";
-
-export default Vue.extend({
-  name: "Console",
+@Component({
   components: {
     Navbar,
   },
-});
+})
+export default class Console extends Vue {}
 </script>

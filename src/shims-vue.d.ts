@@ -12,7 +12,14 @@ declare module "vue/types/vue" {
   interface Vue {
     $router: VueRouter;
     $route: Route;
-    $store: Store<any>;
-    $api: any;
+    $store: Store<unknown>;
+    $api: unknown;
+    $log: {
+      debug(...args: unknown[]): void;
+      info(...args: unknown[]): void;
+      warning(...args: unknown[]): void;
+      error(...args: unknown[]): void;
+      fatal(...args: unknown[]): void;
+    };
   }
 }

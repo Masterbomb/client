@@ -1,9 +1,209 @@
 <template>
-  <div></div>
+  <v-data-table
+    :headers="headers"
+    :items="desserts"
+    sort-by="calories"
+    class="elevation-1"
+  >
+    <template #top>
+      <v-toolbar flat>
+        <v-toolbar-title>My CRUD</v-toolbar-title>
+        <v-divider class="mx-4" inset vertical></v-divider>
+        <v-spacer></v-spacer>
+        <v-dialog v-model="dialog" max-width="500px">
+          <template #activator="{ on, attrs }">
+            <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
+              New Item
+            </v-btn>
+          </template>
+          <v-card>
+            <v-card-title>
+              <span class="text-h5">{{ formTitle }}</span>
+            </v-card-title>
+
+            <v-card-text>
+              <v-container>
+                <v-row>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field
+                      v-model="editedItem.id"
+                      label="Manufacturer ID"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field
+                      v-model="editedItem.name"
+                      label="Name"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field
+                      v-model="editedItem.website"
+                      label="Website"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field
+                      v-model="editedItem.email"
+                      label="Email"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card-text>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" text @click="close"> Cancel </v-btn>
+              <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <v-dialog v-model="dialogDelete" max-width="500px">
+          <v-card>
+            <v-card-title class="text-h5"
+              >Are you sure you want to delete this item?</v-card-title
+            >
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" text @click="closeDelete"
+                >Cancel</v-btn
+              >
+              <v-btn color="blue darken-1" text @click="deleteItemConfirm"
+                >OK</v-btn
+              >
+              <v-spacer></v-spacer>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-toolbar>
+    </template>
+    <template #[`item.actions`]="{ item }">
+      <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
+      <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
+    </template>
+    <template #no-data>
+      <v-btn color="primary" @click="initialize"> Reset </v-btn>
+    </template>
+  </v-data-table>
 </template>
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
+
+interface Manufacturer {
+  id: number;
+  name: string;
+  website: string;
+  email?: string;
+}
+
 @Component
-export default class Manufacturers extends Vue {}
+export default class Manufacturers extends Vue {
+  private dialog = false;
+  private dialogDelete = false;
+  private headers = [
+    {
+      text: "Manufacturer ID",
+      align: "start",
+      sortable: false,
+      value: "id",
+    },
+    { text: "Name", value: "name" },
+    { text: "Website", value: "website" },
+    { text: "Email", value: "email" },
+  ];
+  private desserts: Array<Manufacturer> = [];
+  private editedIndex = -1;
+  private editedItem: Manufacturer = {
+    id: 1,
+    name: "test",
+    website: "test.com",
+    email: "test@test.com",
+  };
+  defaultItem!: Manufacturer;
+
+  get formTitle(): string {
+    return this.editedIndex === -1 ? "New Item" : "Edit Item";
+  }
+
+  @Watch("dialog")
+  dialogChanged(val: boolean): void {
+    val || this.close();
+  }
+
+  @Watch("dialogDelete")
+  dialogDeleteChanged(val: boolean): void {
+    val || this.closeDelete();
+  }
+
+  created(): void {
+    this.initialize();
+  }
+
+  public initialize(): void {
+    this.desserts = [
+      {
+        id: 0,
+        name: "Bobs Garage",
+        email: "bob@garage.com",
+        website: "bobsgarage.com",
+      },
+      {
+        id: 1,
+        name: "Pauls Garage",
+        email: "paul@garage.com",
+        website: "paulsgarage.com",
+      },
+      {
+        id: 2,
+        name: "Ryans Garage",
+        email: "ryan@garage.com",
+        website: "ryansgarage.com",
+      },
+    ];
+  }
+
+  public editItem(item: Manufacturer): void {
+    this.editedIndex = this.desserts.indexOf(item);
+    this.editedItem = Object.assign({}, item);
+    this.dialog = true;
+  }
+
+  public deleteItem(item: Manufacturer): void {
+    this.editedIndex = this.desserts.indexOf(item);
+    this.editedItem = Object.assign({}, item);
+    this.dialogDelete = true;
+  }
+
+  public deleteItemConfirm(): void {
+    this.desserts.splice(this.editedIndex, 1);
+    this.closeDelete();
+  }
+
+  public close(): void {
+    this.dialog = false;
+    this.$nextTick(() => {
+      this.editedItem = Object.assign({}, this.defaultItem);
+      this.editedIndex = -1;
+    });
+  }
+
+  public closeDelete(): void {
+    this.dialogDelete = false;
+    this.$nextTick(() => {
+      this.editedItem = Object.assign({}, this.defaultItem);
+      this.editedIndex = -1;
+    });
+  }
+
+  public save(): void {
+    if (this.editedIndex > -1) {
+      Object.assign(this.desserts[this.editedIndex], this.editedItem);
+    } else {
+      this.desserts.push(this.editedItem);
+    }
+    this.close();
+  }
+}
 </script>
 <style lang="scss"></style>

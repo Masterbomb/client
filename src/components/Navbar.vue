@@ -130,7 +130,7 @@ export default class Navbar extends Vue {
     window.open(url);
   }
   public goToPage(pageName: string): void {
-    this.$log.debug("Page change to ", pageName, " requested");
+    this.$log.debug("Page change to", pageName, "requested");
     if (this.$route.name !== pageName) {
       this.$router.push({
         name: pageName,

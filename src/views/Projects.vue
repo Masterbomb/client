@@ -1,23 +1,18 @@
 <template>
-  <v-container>
-    <v-row wrap>
-      <v-col
-        v-for="project in projects"
-        :key="project.id"
-        xl="4"
-        justify-center
-        align-center
-      >
-        <v-container class="fill-height">
-          <project-card
-            :id="project.id"
-            :name="project.name"
-            :part-progress="project.progress"
-            :timeline="project.timeline"
-          />
-        </v-container>
-      </v-col>
-    </v-row>
+  <v-container class="my-5">
+    <v-layout row wrap>
+      <v-flex v-for="project in projects" :key="project.id" xs4 sm4 md4>
+        <project-card
+          :id="project.id"
+          :name="project.name"
+          :ordered-parts="project.orderedParts"
+          :total-parts="project.totalParts"
+          :completed-units="project.completedUnits"
+          :total-units="project.totalUnits"
+          :timeline="project.timeline"
+        />
+      </v-flex>
+    </v-layout>
   </v-container>
 </template>
 <script lang="ts">
@@ -27,7 +22,10 @@ import ProjectCard from "@/components/ProjectCard.vue";
 interface Project {
   id: number;
   name: string;
-  progress: number;
+  orderedParts: number;
+  totalParts: number;
+  totalUnits: number;
+  completedUnits: number;
   timeline: Array<Date>;
 }
 
@@ -46,31 +44,46 @@ export default class Projects extends Vue {
       {
         id: 0,
         name: "LEAP Transmitter",
-        progress: 56,
+        orderedParts: 56,
+        totalParts: 100,
+        completedUnits: 10,
+        totalUnits: 45,
         timeline: [new Date("2019-01-16"), new Date("2022-01-16")],
       },
       {
         id: 1,
         name: "Ambilight",
-        progress: 21,
+        orderedParts: 6,
+        totalParts: 8,
+        completedUnits: 10,
+        totalUnits: 45,
         timeline: [new Date("2021-09-04"), new Date("2021-12-16")],
       },
       {
         id: 2,
         name: "Hydroponic",
-        progress: 0,
+        orderedParts: 1,
+        totalParts: 100,
+        completedUnits: 10,
+        totalUnits: 45,
         timeline: [new Date("2021-06-14"), new Date("2021-10-10")],
       },
       {
         id: 3,
         name: "OpenHerb",
-        progress: 76,
+        orderedParts: 56,
+        totalParts: 100,
+        completedUnits: 10,
+        totalUnits: 45,
         timeline: [new Date("2021-09-04"), new Date("2021-12-16")],
       },
       {
         id: 4,
         name: "TP Cluster",
-        progress: 98,
+        orderedParts: 56,
+        totalParts: 100,
+        completedUnits: 10,
+        totalUnits: 45,
         timeline: [new Date("2020-07-30"), new Date("2020-11-27")],
       },
     ];

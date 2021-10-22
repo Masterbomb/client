@@ -70,83 +70,74 @@
   </div>
 </template>
 <script lang="ts">
-import { mapGetters } from "vuex";
-
-export default {
-  name: "Navbar",
-  data(): unknown {
-    return {
-      drawer: false,
-      group: null,
-      items: [
-        {
-          name: "Home",
-          icon: "mdi-home",
-          page: "/",
-        },
-        {
-          name: "Projects",
-          icon: "mdi-cube-outline",
-          page: "projects",
-        },
-        {
-          name: "Parts",
-          icon: "mdi-nut",
-          page: "parts",
-        },
-        {
-          name: "Manufacturers",
-          icon: "mdi-factory",
-          page: "manufacturers",
-        },
-        {
-          name: "Profile",
-          icon: "mdi-account",
-          page: "profile",
-        },
-      ],
-      buttons: [
-        {
-          name: "New Project",
-          icon: "mdi-cube-outline",
-          func: () => {
-            return;
-          },
-        },
-        {
-          name: "Register Part",
-          icon: "mdi-plus",
-          func: () => {
-            return;
-          },
-        },
-        {
-          name: "Logout",
-          icon: "mdi-logout",
-          func: () => {
-            return;
-          },
-        },
-      ],
-    };
-  },
-  computed: {
-    ...mapGetters(["authUser"]),
-  },
-  methods: {
-    resolveExternalURL(url: string): void {
-      window.open(url);
+import { Component, Vue } from "vue-property-decorator";
+@Component
+export default class Navbar extends Vue {
+  private msg!: string;
+  private drawer = false;
+  private group = null;
+  private items = [
+    {
+      name: "Home",
+      icon: "mdi-home",
+      page: "/",
     },
-    // goToPage: (pageName: string): void => {
-    //   this.$log.debug("Page change to ", pageName, " requested");
-    //   if (this.$route.name !== pageName) {
-    //     this.$router.push({
-    //       name: pageName,
-    //     });
-    //   }
-    //   this.drawer = false;
-    // },
-  },
-};
+    {
+      name: "Projects",
+      icon: "mdi-cube-outline",
+      page: "projects",
+    },
+    {
+      name: "Parts",
+      icon: "mdi-nut",
+      page: "parts",
+    },
+    {
+      name: "Manufacturers",
+      icon: "mdi-factory",
+      page: "manufacturers",
+    },
+    {
+      name: "Profile",
+      icon: "mdi-account",
+      page: "profile",
+    },
+  ];
+  private buttons = [
+    {
+      name: "New Project",
+      icon: "mdi-cube-outline",
+      func: () => {
+        return;
+      },
+    },
+    {
+      name: "Register Part",
+      icon: "mdi-plus",
+      func: () => {
+        return;
+      },
+    },
+    {
+      name: "Logout",
+      icon: "mdi-logout",
+      func: () => {
+        return;
+      },
+    },
+  ];
+  public resolveExternalURL(url: string): void {
+    window.open(url);
+  }
+  public goToPage(pageName: string): void {
+    this.$log.debug("Page change to ", pageName, " requested");
+    if (this.$route.name !== pageName) {
+      this.$router.push({
+        name: pageName,
+      });
+    }
+    this.drawer = false;
+  }
+}
 </script>
 <style lang="scss"></style>

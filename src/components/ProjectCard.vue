@@ -1,16 +1,14 @@
 <template>
-  <v-container class="ma-0 pa-0" justify-center align-center>
+  <v-container class="pa-8 ma-4">
     <v-hover v-slot="{ hover }">
       <v-card
         :id="'project-' + id"
-        ref="card"
         class="
           text-center
           fill-height
           rounded-tl-xl rounded-tr-xl rounded-bl-xl rounded-br-xl
           transition-swing
         "
-        min-height="400px"
         max-width="1000px"
         width="100%"
         style="cursor: pointer"
@@ -18,44 +16,60 @@
         :class="`elevation-${hover ? 20 : 5}`"
         :ripple="false"
       >
-        <v-list-item one-line>
-          <v-list-item-title> {{ name }} </v-list-item-title>
-        </v-list-item>
-        <v-card-text>
-          <v-row align="center">
-            <v-col cols="6">
-              <v-list-item class="pa-0">
-                <v-list-item-content>
-                  <v-progress-circular
-                    :rotate="-90"
-                    :size="100"
-                    :width="15"
-                    :value="partProgress"
-                    :color="calcColor(partProgress)"
-                  >
-                    {{ partProgress }}
-                  </v-progress-circular>
-                  <v-list-item-title> Parts </v-list-item-title>
-                </v-list-item-content>
+        <v-container fill-height fluid>
+          <v-row align="center" justify="center">
+            <v-col>
+              <v-list-item one-line>
+                <v-list-item-title>
+                  <h1>{{ name }}</h1>
+                </v-list-item-title>
               </v-list-item>
-            </v-col>
-            <v-col cols="6">
-              <v-list-item class="pa-0">
-                <v-list-item-content>
-                  <h1>1/2</h1>
-                  <v-list-item-title> Units </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
+              <v-card-text>
+                <v-row align="center">
+                  <v-col cols="6">
+                    <v-list-item class="pa-0">
+                      <v-list-item-content>
+                        <v-progress-circular
+                          :rotate="-90"
+                          :size="100"
+                          :width="15"
+                          :value="(orderedParts / totalParts) * 100"
+                          :color="calcColor((orderedParts / totalParts) * 100)"
+                        >
+                          {{ orderedParts }} / {{ totalParts }}
+                        </v-progress-circular>
+                        <v-list-item-title> Parts </v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-col>
+                  <v-col cols="6">
+                    <v-list-item class="pa-0">
+                      <v-list-item-content>
+                        <v-progress-circular
+                          :rotate="-90"
+                          :size="100"
+                          :width="15"
+                          :value="partProgress"
+                          :color="calcColor(partProgress)"
+                        >
+                          {{ completedUnits }} / {{ totalUnits }}
+                        </v-progress-circular>
+                        <v-list-item-title> Units </v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-col>
+                </v-row>
+              </v-card-text>
+              <v-slider
+                v-model="time"
+                :max="6"
+                :tick-labels="labels"
+                class="mx-4"
+                ticks
+              ></v-slider>
             </v-col>
           </v-row>
-        </v-card-text>
-        <v-slider
-          v-model="time"
-          :max="6"
-          :tick-labels="labels"
-          class="mx-4"
-          ticks
-        ></v-slider>
+        </v-container>
       </v-card>
     </v-hover>
   </v-container>
@@ -66,7 +80,11 @@ import { Component, Vue, Prop } from "vue-property-decorator";
 export default class ProjectCard extends Vue {
   @Prop({ required: true }) readonly id!: number;
   @Prop({ required: true }) readonly name!: string;
-  @Prop({ required: true }) readonly partProgress!: number;
+  @Prop({ required: true }) readonly orderedParts!: number;
+  @Prop({ required: true }) readonly totalParts!: number;
+  @Prop({ required: true }) readonly totalUnits!: number;
+  @Prop({ required: true }) readonly completedUnits!: number;
+  @Prop({ required: true }) readonly Progress!: number;
   @Prop({ required: true }) readonly timeline!: Array<Date>;
 
   public calcColor(progress: number): string {

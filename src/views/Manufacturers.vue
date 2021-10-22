@@ -24,7 +24,7 @@
             <template #activator="{ on, attrs }">
               <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
                 <v-icon left>mdi-plus</v-icon>
-                Add
+                Register
               </v-btn>
             </template>
             <v-card>

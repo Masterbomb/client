@@ -3,14 +3,23 @@
     <v-data-table
       :headers="headers"
       :items="manufacturers"
+      :search="search"
       sort-by="id"
       class="elevation-1"
     >
       <template #top>
         <v-toolbar flat>
           <v-toolbar-title>Manufacturers</v-toolbar-title>
-          <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
+          <v-card-title>
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="Search"
+              single-line
+              hide-details
+            ></v-text-field>
+          </v-card-title>
           <v-dialog v-model="dialog" max-width="500px">
             <template #activator="{ on, attrs }">
               <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
@@ -20,18 +29,11 @@
             </template>
             <v-card>
               <v-card-title>
-                <span class="text-h5">{{ formTitle }}</span>
+                <span>{{ formTitle }}</span>
               </v-card-title>
-
               <v-card-text>
                 <v-container>
                   <v-row>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        v-model="editedItem.id"
-                        label="Manufacturer ID"
-                      ></v-text-field>
-                    </v-col>
                     <v-col cols="12" sm="6" md="4">
                       <v-text-field
                         v-model="editedItem.name"
@@ -56,25 +58,21 @@
 
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="close">
-                  Cancel
-                </v-btn>
-                <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
+                <v-btn color="error" text @click="close"> Cancel </v-btn>
+                <v-btn color="primary" text @click="post"> Save </v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
           <v-dialog v-model="dialogDelete" max-width="500px">
             <v-card>
-              <v-card-title class="text-h5"
+              <v-card-title
                 >Are you sure you want to delete this item?</v-card-title
               >
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Cancel</v-btn
-                >
-                <v-btn color="blue darken-1" text @click="deleteItemConfirm"
-                  >OK</v-btn
+                <v-btn color="primary" text @click="closeDelete">Cancel</v-btn>
+                <v-btn color="error" text @click="deleteItemConfirm"
+                  >Delete</v-btn
                 >
                 <v-spacer></v-spacer>
               </v-card-actions>
@@ -106,7 +104,7 @@
 import { Component, Vue, Watch } from "vue-property-decorator";
 
 interface Manufacturer {
-  id: number;
+  id?: number;
   name: string;
   website: string;
   email?: string;
@@ -114,6 +112,7 @@ interface Manufacturer {
 
 @Component
 export default class Manufacturers extends Vue {
+  private search = "";
   private dialog = false;
   private dialogDelete = false;
   private headers = [
@@ -136,10 +135,14 @@ export default class Manufacturers extends Vue {
     website: "test.com",
     email: "test@test.com",
   };
-  defaultItem!: Manufacturer;
+  defaultItem = {
+    name: "test",
+    website: "test.com",
+    email: "test@test.com",
+  };
 
   get formTitle(): string {
-    return this.editedIndex === -1 ? "New Item" : "Edit Item";
+    return this.editedIndex === -1 ? "New Manufacturer" : "Edit Manufacturer";
   }
 
   @Watch("dialog")
@@ -212,10 +215,12 @@ export default class Manufacturers extends Vue {
     });
   }
 
-  public save(): void {
+  public post(): void {
     if (this.editedIndex > -1) {
       Object.assign(this.manufacturers[this.editedIndex], this.editedItem);
     } else {
+      // append mock id to edited item for post
+      this.editedItem.id = this.manufacturers.length + 1;
       this.manufacturers.push(this.editedItem);
     }
     this.close();

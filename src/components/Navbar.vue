@@ -2,6 +2,7 @@
   <div>
     <v-app-bar dense>
       <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
+      <v-toolbar-title>{{ $route.path }}</v-toolbar-title>
       <v-spacer />
       <img :src="require('@/assets/logo.png')" height="30px" width="30px" />
       <v-toolbar-title style="padding-left: 1%">Masterbom</v-toolbar-title>

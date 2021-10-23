@@ -1,16 +1,18 @@
 <template>
   <v-container class="my-5">
-    <v-layout row wrap>
+    <v-layout row wrap align-center>
       <v-flex v-for="project in projects" :key="project.id" class="pa-5">
-        <project-card
-          :id="project.id"
-          :name="project.name"
-          :ordered-parts="project.orderedParts"
-          :total-parts="project.totalParts"
-          :completed-units="project.completedUnits"
-          :total-units="project.totalUnits"
-          :timeline="project.timeline"
-        />
+        <div align="center" justify="center">
+          <project-card
+            :id="project.id"
+            :name="project.name"
+            :ordered-parts="project.orderedParts"
+            :total-parts="project.totalParts"
+            :completed-units="project.completedUnits"
+            :total-units="project.totalUnits"
+            :timeline="project.timeline"
+          />
+        </div>
       </v-flex>
     </v-layout>
   </v-container>

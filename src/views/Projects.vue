@@ -1,7 +1,7 @@
 <template>
   <v-container class="my-5">
     <v-layout row wrap>
-      <v-flex v-for="project in projects" :key="project.id" xs4 sm4 md4>
+      <v-flex v-for="project in projects" :key="project.id" class="pa-5">
         <project-card
           :id="project.id"
           :name="project.name"
@@ -45,9 +45,9 @@ export default class Projects extends Vue {
         id: 0,
         name: "LEAP Transmitter",
         orderedParts: 56,
-        totalParts: 100,
-        completedUnits: 10,
-        totalUnits: 45,
+        totalParts: 87,
+        completedUnits: 65,
+        totalUnits: 67,
         timeline: [new Date("2019-01-16"), new Date("2022-01-16")],
       },
       {
@@ -55,8 +55,8 @@ export default class Projects extends Vue {
         name: "Ambilight",
         orderedParts: 6,
         totalParts: 8,
-        completedUnits: 10,
-        totalUnits: 45,
+        completedUnits: 1,
+        totalUnits: 2,
         timeline: [new Date("2021-09-04"), new Date("2021-12-16")],
       },
       {
@@ -64,17 +64,17 @@ export default class Projects extends Vue {
         name: "Hydroponic",
         orderedParts: 1,
         totalParts: 100,
-        completedUnits: 10,
-        totalUnits: 45,
+        completedUnits: 1,
+        totalUnits: 4,
         timeline: [new Date("2021-06-14"), new Date("2021-10-10")],
       },
       {
         id: 3,
         name: "OpenHerb",
-        orderedParts: 56,
-        totalParts: 100,
-        completedUnits: 10,
-        totalUnits: 45,
+        orderedParts: 1,
+        totalParts: 23,
+        completedUnits: 12,
+        totalUnits: 21,
         timeline: [new Date("2021-09-04"), new Date("2021-12-16")],
       },
       {

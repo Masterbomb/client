@@ -10,6 +10,8 @@
       "
       max-height="400px"
       max-width="400px"
+      min-width="200px"
+      min-height="200px"
       width="100%"
       style="cursor: pointer"
       color="background"

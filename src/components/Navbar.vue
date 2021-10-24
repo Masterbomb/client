@@ -72,12 +72,25 @@
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+
+interface PageNav {
+  name: string;
+  icon: string;
+  page: string;
+}
+
+interface Actions {
+  name: string;
+  icon: string;
+  func: () => unknown;
+}
+
 @Component
 export default class Navbar extends Vue {
   private msg!: string;
   private drawer = false;
   private group = null;
-  private items = [
+  private items: Array<PageNav> = [
     {
       name: "Home",
       icon: "mdi-home",
@@ -94,6 +107,11 @@ export default class Navbar extends Vue {
       page: "parts",
     },
     {
+      name: "Suppliers",
+      icon: "mdi-store",
+      page: "suppliers",
+    },
+    {
       name: "Manufacturers",
       icon: "mdi-factory",
       page: "manufacturers",
@@ -104,7 +122,7 @@ export default class Navbar extends Vue {
       page: "profile",
     },
   ];
-  private buttons = [
+  private buttons: Array<Actions> = [
     {
       name: "New Project",
       icon: "mdi-cube-outline",

@@ -6,6 +6,7 @@ import Parts from "../views/Parts.vue";
 import Bom from "../views/Bom.vue";
 import Projects from "../views/Projects.vue";
 import Profile from "../views/Profile.vue";
+import Supplier from "../views/Suppliers.vue";
 
 Vue.use(VueRouter);
 
@@ -19,6 +20,12 @@ const routes: Array<RouteConfig> = [
         path: "bom",
         name: "bom",
         component: Bom,
+        props: true,
+      },
+      {
+        path: "suppliers",
+        name: "suppliers",
+        component: Supplier,
         props: true,
       },
       {

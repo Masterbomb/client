@@ -102,13 +102,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Watch } from "vue-property-decorator";
-
-interface Manufacturer {
-  id?: number;
-  name: string;
-  website: string;
-  email?: string;
-}
+import Manufacturer from "@/types/manufacturer";
 
 @Component
 export default class Manufacturers extends Vue {

@@ -108,12 +108,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Watch } from "vue-property-decorator";
-
-interface Supplier {
-  id?: number;
-  name: string;
-  website: string;
-}
+import Supplier from "@/types/supplier";
 
 @Component
 export default class Suppliers extends Vue {

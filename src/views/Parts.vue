@@ -108,14 +108,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Watch } from "vue-property-decorator";
-
-interface Part {
-  id?: number;
-  name: string;
-  unit_price: number;
-  manufacturer_id: number;
-  description: string;
-}
+import Part from "@/types/part";
 
 @Component
 export default class Parts extends Vue {

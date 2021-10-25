@@ -1,7 +1,7 @@
 import VueRouter from "vue-router";
 import { Route } from "vue-router";
 import { Store } from "vuex";
-
+import { AxiosStatic } from 'axios';
 declare module "*.vue" {
   import Vue from "vue";
   export default Vue;
@@ -17,6 +17,7 @@ declare module "vue/types/vue" {
     $route: Route;
     $store: Store<unknown>;
     $api: unknown;
+    $axios: AxiosStatic;
     $log: {
       debug(...args: unknown[]): void;
       info(...args: unknown[]): void;

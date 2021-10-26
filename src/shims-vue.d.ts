@@ -1,7 +1,7 @@
 import VueRouter from "vue-router";
 import { Route } from "vue-router";
 import { Store } from "vuex";
-import { AxiosStatic } from 'axios';
+import { AxiosStatic } from "axios";
 declare module "*.vue" {
   import Vue from "vue";
   export default Vue;

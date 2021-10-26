@@ -109,6 +109,7 @@
 <script lang="ts">
 import { Component, Vue, Watch } from "vue-property-decorator";
 import Part from "@/types/part";
+import { get } from "@/services/requests";
 
 @Component
 export default class Parts extends Vue {
@@ -159,6 +160,7 @@ export default class Parts extends Vue {
   }
 
   created(): void {
+    let response = get("parts");
     this.initialize();
   }
 

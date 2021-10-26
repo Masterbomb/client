@@ -12,9 +12,9 @@ import { log } from "@/main";
 export async function get<Type>(
   endpoint: string
 ): Promise<AxiosResponse<Type> | null> {
-  log.info(`API GET ${process.env.API_BASE_URL}${endpoint}`);
+  log.info(`API GET ${process.env.VUE_APP_API_BASE_URL}${endpoint}`);
   axios
-    .get<Type>(process.env.API_BASE_URL + endpoint, {
+    .get<Type>(process.env.VUE_APP_API_BASE_URL + endpoint, {
       headers: { "Content-Type": "application/json" },
     })
     .then((axios_response: AxiosResponse<Type>) => {
@@ -32,9 +32,9 @@ export async function get<Type>(
 export async function getAll<Type>(
   endpoint: string
 ): Promise<AxiosResponse<Type[]> | null> {
-  log.info(`API GET ${process.env.API_BASE_URL}${endpoint}`);
+  log.info(`API GET ${process.env.VUE_APP_API_BASE_URL}${endpoint}`);
   axios
-    .get<Type[]>(process.env.API_BASE_URL + endpoint, {
+    .get<Type[]>(process.env.VUE_APP_API_BASE_URL + endpoint, {
       headers: { "Content-Type": "application/json" },
     })
     .then((axios_response: AxiosResponse<Type[]>) => {
@@ -53,9 +53,9 @@ export async function post<Type>(
   endpoint: string,
   payload: Type
 ): Promise<AxiosResponse<Type> | null> {
-  log.info(`API POST ${process.env.API_BASE_URL}${endpoint}`);
+  log.info(`API POST ${process.env.VUE_APP_API_BASE_URL}${endpoint}`);
   axios
-    .post<Type>(process.env.API_BASE_URL + endpoint, {
+    .post<Type>(process.env.VUE_APP_API_BASE_URL + endpoint, {
       headers: { "Content-Type": "application/json" },
       data: payload,
     })
@@ -75,9 +75,9 @@ export async function put<Type>(
   endpoint: string,
   payload: Type
 ): Promise<AxiosResponse<Type> | null> {
-  log.info(`API PUT ${process.env.API_BASE_URL}${endpoint}`);
+  log.info(`API PUT ${process.env.VUE_APP_API_BASE_URL}${endpoint}`);
   axios
-    .put<Type>(process.env.API_BASE_URL + endpoint, {
+    .put<Type>(process.env.VUE_APP_API_BASE_URL + endpoint, {
       headers: { "Content-Type": "application/json" },
       data: payload,
     })
@@ -96,9 +96,9 @@ export async function put<Type>(
 export async function del<Type>(
   endpoint: string
 ): Promise<AxiosResponse<Type> | null> {
-  log.info(`API DELETE ${process.env.API_BASE_URL}${endpoint}`);
+  log.info(`API DELETE ${process.env.VUE_APP_API_BASE_URL}${endpoint}`);
   axios
-    .put(process.env.API_BASE_URL + endpoint, {
+    .put(process.env.VUE_APP_API_BASE_URL + endpoint, {
       headers: { "Content-Type": "application/json" },
     })
     .then((axios_response: AxiosResponse<unknown>) => {

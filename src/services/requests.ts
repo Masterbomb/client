@@ -3,27 +3,48 @@
  *
  * Axios requests interface
  *
- * @module index.ts
+ * @module requests.ts
  */
 
 import axios, { AxiosResponse } from "axios";
+import { log } from "@/main";
 
 export async function get<Type>(
   endpoint: string
-): Promise<AxiosResponse<Type[]> | null> {
-  console.log(`API GET ${process.env.API_BASE_URL}${endpoint}`);
+): Promise<AxiosResponse<Type> | null> {
+  log.info(`API GET ${process.env.API_BASE_URL}${endpoint}`);
   axios
-    .get<Type[]>(process.env.API_BASE_URL + endpoint, {
+    .get<Type>(process.env.API_BASE_URL + endpoint, {
       headers: { "Content-Type": "application/json" },
     })
-    .then((axios_response) => {
-      console.log(
+    .then((axios_response: AxiosResponse<Type>) => {
+      log.info(
         `API GET success with response ${axios_response.status} ${axios_response.statusText}`
       );
       return axios_response;
     })
-    .catch((err) => {
-      console.error(`API GET failed with ${err}`);
+    .catch((err: Error) => {
+      log.error("API GET failed", err);
+    });
+  return null;
+}
+
+export async function getAll<Type>(
+  endpoint: string
+): Promise<AxiosResponse<Type[]> | null> {
+  log.info(`API GET ${process.env.API_BASE_URL}${endpoint}`);
+  axios
+    .get<Type[]>(process.env.API_BASE_URL + endpoint, {
+      headers: { "Content-Type": "application/json" },
+    })
+    .then((axios_response: AxiosResponse<Type[]>) => {
+      log.info(
+        `API GET success with response ${axios_response.status} ${axios_response.statusText}`
+      );
+      return axios_response;
+    })
+    .catch((err: Error) => {
+      log.error("API GET failed", err);
     });
   return null;
 }
@@ -31,21 +52,21 @@ export async function get<Type>(
 export async function post<Type>(
   endpoint: string,
   payload: Type
-): Promise<AxiosResponse<any> | null> {
-  console.log(`API POST ${process.env.API_BASE_URL}${endpoint}`);
+): Promise<AxiosResponse<Type> | null> {
+  log.info(`API POST ${process.env.API_BASE_URL}${endpoint}`);
   axios
-    .post(process.env.API_BASE_URL + endpoint, {
+    .post<Type>(process.env.API_BASE_URL + endpoint, {
       headers: { "Content-Type": "application/json" },
       data: payload,
     })
-    .then((axios_response) => {
-      console.log(
+    .then((axios_response: AxiosResponse<Type>) => {
+      log.info(
         `API POST success with status ${axios_response.status} ${axios_response.statusText}`
       );
       return axios_response;
     })
-    .catch((err) => {
-      console.error(`API POST failed with ${err}`);
+    .catch((err: Error) => {
+      log.error("API POST failed", err);
     });
   return null;
 }
@@ -53,41 +74,41 @@ export async function post<Type>(
 export async function put<Type>(
   endpoint: string,
   payload: Type
-): Promise<AxiosResponse<any> | null> {
-  console.log(`API PUT ${process.env.API_BASE_URL}${endpoint}`);
+): Promise<AxiosResponse<Type> | null> {
+  log.info(`API PUT ${process.env.API_BASE_URL}${endpoint}`);
   axios
-    .put(process.env.API_BASE_URL + endpoint, {
+    .put<Type>(process.env.API_BASE_URL + endpoint, {
       headers: { "Content-Type": "application/json" },
       data: payload,
     })
-    .then((axios_response) => {
-      console.log(
+    .then((axios_response: AxiosResponse<Type>) => {
+      log.info(
         `API PUT success with status ${axios_response.status} ${axios_response.statusText}`
       );
       return axios_response;
     })
-    .catch((err) => {
-      console.error(`API PUT failed with ${err}`);
+    .catch((err: Error) => {
+      log.error("API PUT failed", err);
     });
   return null;
 }
 
-export async function del(
+export async function del<Type>(
   endpoint: string
-): Promise<AxiosResponse<any> | null> {
-  console.log(`API DELETE ${process.env.API_BASE_URL}${endpoint}`);
+): Promise<AxiosResponse<Type> | null> {
+  log.info(`API DELETE ${process.env.API_BASE_URL}${endpoint}`);
   axios
     .put(process.env.API_BASE_URL + endpoint, {
       headers: { "Content-Type": "application/json" },
     })
-    .then((axios_response) => {
-      console.log(
+    .then((axios_response: AxiosResponse<unknown>) => {
+      log.info(
         `API DELETE success with status ${axios_response.status} ${axios_response.statusText}`
       );
       return axios_response;
     })
-    .catch((err) => {
-      console.error(`API DELETE failed with ${err}`);
+    .catch((err: Error) => {
+      log.error("API DELETE: ", err);
     });
   return null;
 }

@@ -14,8 +14,6 @@ services:
   psql:
     image: postgres:latest
     container_name: psql
-    ports:
-      - "5432:5432"
     environment:
       POSTGRES_PASSWORD: admin
       POSTGRES_USER: admin
@@ -23,8 +21,8 @@ services:
     volumes:
       - masterbom-db:/var/lib/postgresql/data
 
-  backend:
-    container_name: backend
+  api:
+    container_name: api
     image: masterbom/api:latest
     ports:
       - "5000:5000"

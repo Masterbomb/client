@@ -1,11 +1,11 @@
-FROM node:17-alpine as build
+FROM node:14 as build
 
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 COPY package.json /app/package.json
-RUN npm install --production
+RUN npm install
 RUN npm install @vue/cli -g
-COPY . /app
+COPY . .
 RUN npm run build
 
 # production environment

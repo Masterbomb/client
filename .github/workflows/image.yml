@@ -65,7 +65,8 @@ jobs:
         with:
           images: ghcr.io/client
       - name: Build and push Docker image
-        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        id: docker_build
+        uses: docker/build-push-action@v2
         with:
           context: ./
           push: true

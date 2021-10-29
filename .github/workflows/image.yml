@@ -46,13 +46,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Cache Docker Layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
       - name: Log in to the Container registry
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
         with:
@@ -70,10 +63,7 @@ jobs:
         with:
           context: ./
           file: docker/prod/Dockerfile
-          builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: masterbom/client:latest
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
       - name: Image Digest
         run: echo ${{ steps.docker_build.outputs.digest }}

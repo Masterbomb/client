@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  client:
+    container_name: client
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    volumes:
+      - ../:/app
+    ports:
+      - "8080:8080"
+
+  psql:
+    image: postgres:latest
+    container_name: psql
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: admin
+      POSTGRES_DB: dev
+    volumes:
+      - masterbom-db:/var/lib/postgresql/data
+
+  backend:
+    container_name: backend
+    image: masterbom/api:latest
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: development
+      PGHOST: psql
+      PGUSER: admin
+      PGDATABASE: dev
+      PGPORT: 5432
+    depends_on:
+      - psql
+
+volumes:
+  masterbom-db:

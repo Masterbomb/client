@@ -7,4 +7,9 @@
 
 Modified: 2021-11
 
-Masterbom client.
+## Navigation
+1. [Documentation](./docs/README.md)
+2. [License](#license) 
+
+## License
+This repository is licensed by GPLv3. See the full license [here](LICENSE)

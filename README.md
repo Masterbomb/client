@@ -1,5 +1,5 @@
 # MasterBom Client
-[![deploy](https://github.com/Masterbomb/client/actions/workflows/image.yml/badge.svg)](https://github.com/Masterbomb/client/actions/workflows/image.yml)
+[![deploy](https://github.com/Masterbomb/client/actions/workflows/image.yaml/badge.svg)](https://github.com/Masterbomb/client/actions/workflows/image.yaml)
 [![ci](https://github.com/Masterbomb/client/actions/workflows/ci.yaml/badge.svg)](https://github.com/Masterbomb/client/actions/workflows/ci.yaml)
 <p align="center">
   <img src="/docs/img/MB.png"></img>

@@ -16,7 +16,7 @@ on:
 
 jobs:
   deploy:
-    name: Push Docker image to multiple registries
+    name: deploy
     runs-on: ubuntu-latest
     permissions:
       packages: write

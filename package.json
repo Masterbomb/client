@@ -8,7 +8,8 @@
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
     "dev": "./scripts/dev.sh",
-    "clean": "docker-compose -f docker/dev/docker-compose.yaml down --rmi all --volumes"
+    "pull": "docker compose -f docker/dev/docker-compose.yaml pull",
+    "clean": "docker compose -f docker/dev/docker-compose.yaml down --rmi all --volumes"
   },
   "dependencies": {
     "axios": "^0.23.0",

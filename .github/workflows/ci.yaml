@@ -12,6 +12,7 @@ on:
       - ".github/dependabot.yaml"
       - ".github/workflows/image.yaml"
       - "docs/**"
+      - "scripts/**"
   pull_request:
     branches: master
     type: [opened, synchronized, re-opened]

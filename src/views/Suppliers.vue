@@ -109,6 +109,7 @@
 <script lang="ts">
 import { Component, Vue, Watch } from "vue-property-decorator";
 import Supplier from "@/types/supplier";
+import { get } from "@/services/requests";
 
 @Component
 export default class Suppliers extends Vue {
@@ -126,7 +127,7 @@ export default class Suppliers extends Vue {
     { text: "Website", value: "website" },
     { text: "Action", value: "actions", sortable: false },
   ];
-  private suppliers: Array<Supplier> = [];
+  private suppliers: Supplier[] = [];
   private editedIndex = -1;
   private editedItem: Supplier = {
     id: 1,
@@ -156,24 +157,12 @@ export default class Suppliers extends Vue {
     this.initialize();
   }
 
-  public initialize(): void {
-    this.suppliers = [
-      {
-        id: 0,
-        name: "Digikey",
-        website: "digikey.com",
-      },
-      {
-        id: 1,
-        name: "Digikey",
-        website: "digikey.com",
-      },
-      {
-        id: 2,
-        name: "Digikey",
-        website: "digikey.com",
-      },
-    ];
+  public async initialize(): Promise<void> {
+    // get current suppliers list resource
+    let response = await get<Supplier[]>("/suppliers");
+    if (response) {
+      this.suppliers = response;
+    }
   }
 
   public editItem(item: Supplier): void {

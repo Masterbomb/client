@@ -12,4 +12,4 @@ source .env
 printf "%b" "${OKB}Authenticating docker for github container registry${NC}\n"
 echo "$GHCR_PAT" | docker login ghcr.io -u "$GH_USERNAME" --password-stdin
 printf "%b" "${OKB}Building project${NC}\n"
-docker-compose -f docker/dev/docker-compose.yaml up
+docker compose -f docker/dev/docker-compose.yaml up

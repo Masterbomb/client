@@ -9,44 +9,21 @@
 import axios, { AxiosResponse } from "axios";
 import { log } from "@/main";
 
-export async function get<Type>(
-  endpoint: string
-): Promise<AxiosResponse<Type> | null> {
+export async function get<Type>(endpoint: string): Promise<Type | void> {
   log.info(`API GET ${process.env.VUE_APP_API_BASE_URL}${endpoint}`);
   axios
     .get<Type>(process.env.VUE_APP_API_BASE_URL + endpoint, {
       headers: { "Content-Type": "application/json" },
     })
-    .then((axios_response: AxiosResponse<Type>) => {
+    .then((ar: AxiosResponse<Type>) => {
       log.info(
-        `API GET success with response ${axios_response.status} ${axios_response.statusText}`
+        `API GET success with response ${ar.status} ${ar.statusText}\ndata: ${ar.data}`
       );
-      return axios_response;
+      return ar.data;
     })
     .catch((err: Error) => {
       log.error("API GET failed", err);
     });
-  return null;
-}
-
-export async function getAll<Type>(
-  endpoint: string
-): Promise<AxiosResponse<Type[]> | null> {
-  log.info(`API GET ${process.env.VUE_APP_API_BASE_URL}${endpoint}`);
-  axios
-    .get<Type[]>(process.env.VUE_APP_API_BASE_URL + endpoint, {
-      headers: { "Content-Type": "application/json" },
-    })
-    .then((axios_response: AxiosResponse<Type[]>) => {
-      log.info(
-        `API GET success with response ${axios_response.status} ${axios_response.statusText}`
-      );
-      return axios_response;
-    })
-    .catch((err: Error) => {
-      log.error("API GET failed", err);
-    });
-  return null;
 }
 
 export async function post<Type>(

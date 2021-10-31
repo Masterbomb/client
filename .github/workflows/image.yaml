@@ -12,10 +12,11 @@ on:
       - ".github/dependabot.yaml"
       - ".github/workflows/ci.yaml"
       - "docs/**"
+      - "scripts/**"
 
 jobs:
   deploy:
-    name: Push Docker image to multiple registries
+    name: deploy
     runs-on: ubuntu-latest
     permissions:
       packages: write

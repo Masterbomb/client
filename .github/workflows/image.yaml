@@ -12,6 +12,7 @@ on:
       - ".github/dependabot.yaml"
       - ".github/workflows/ci.yaml"
       - "docs/**"
+      - "scripts/**"
 
 jobs:
   deploy:
